@@ -5,14 +5,16 @@ import com.xts.stock.control.usecase.supplier.gateway.SupplierGateway;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
-public class SupplierRegisterUseCase {
+public class GetAllSuppliersUseCase {
 
     private final SupplierGateway supplierGateway;
 
-    public void execute(final SupplierDomain requestDomain) {
+    public List<SupplierDomain> execute() {
 
-        supplierGateway.createNewSupplier(requestDomain);
+        return supplierGateway.getAllSuppliers();
     }
 }

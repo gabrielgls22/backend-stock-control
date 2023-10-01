@@ -1,6 +1,5 @@
 package com.xts.stock.control.entrypoint.supplier.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MaterialDto {
+public class MaterialUpdateRequestDto {
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NotBlank(message = "Supplier cnpj is required")
+    private String cnpj;
+
+    @NotBlank(message = "Material code is required")
     private String code;
 
     @NotBlank(message = "Material name is required")

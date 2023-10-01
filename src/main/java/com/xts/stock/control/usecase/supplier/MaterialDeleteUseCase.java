@@ -1,18 +1,18 @@
 package com.xts.stock.control.usecase.supplier;
 
-import com.xts.stock.control.usecase.supplier.domain.SupplierDomain;
+import com.xts.stock.control.usecase.supplier.domain.MaterialDeleteRequestDomain;
 import com.xts.stock.control.usecase.supplier.gateway.SupplierGateway;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class SupplierRegisterUseCase {
+public class MaterialDeleteUseCase {
 
     private final SupplierGateway supplierGateway;
 
-    public void execute(final SupplierDomain requestDomain) {
+    public void execute(final MaterialDeleteRequestDomain requestDomain) {
 
-        supplierGateway.createNewSupplier(requestDomain);
+        supplierGateway.deleteMaterial(requestDomain);
     }
 }

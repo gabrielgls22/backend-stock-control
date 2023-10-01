@@ -1,7 +1,6 @@
 package com.xts.stock.control.dataprovider.supplier.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.xts.stock.control.usecase.supplier.domain.MaterialDomain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,9 +15,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document("supplier")
-public class SupplierRequestEntity {
+public class SupplierEntity {
 
     @Id
+    @JsonProperty("supplierCnpj")
     private String id;
     private String supplierName;
     private List<MaterialEntity> materialList;

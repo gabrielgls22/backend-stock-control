@@ -6,20 +6,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SupplierRequestDto {
+public class MaterialAddRequestDto {
 
-    @NotBlank(message = "Supplier name is required")
-    private String supplierName;
-
-    @NotBlank(message = "Supplier cnpj is required")
+    @NotBlank(message = "Supplier cpnj is required")
     private String supplierCnpj;
 
-    @NotBlank(message = "Material list is required")
-    private List<MaterialDto> materialList;
+    @NotBlank(message = "Material name is required")
+    private String name;
+
+    @NotBlank(message = "Material description is required")
+    private String description;
 }
