@@ -28,7 +28,7 @@ public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper{
     }
 
     @Override
-    public List<SupplierDto> getAllSuppliersDomainToEntity(final List<SupplierDomain> responseDomain) {
+    public List<SupplierDto> getAllSuppliersDomainToDto(final List<SupplierDomain> responseDomain) {
         final List<SupplierDto> supplierDtoList = new ArrayList<>();
 
         responseDomain.forEach(supplierDomain -> {

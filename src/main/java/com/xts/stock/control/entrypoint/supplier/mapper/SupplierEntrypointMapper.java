@@ -9,7 +9,7 @@ public interface SupplierEntrypointMapper {
 
     SupplierDomain createSupplierRequestDtoToDomain(SupplierDto requestDto);
 
-    List<SupplierDto> getAllSuppliersDomainToEntity(List<SupplierDomain> responseDomain);
+    List<SupplierDto> getAllSuppliersDomainToDto(List<SupplierDomain> responseDomain);
 
     SupplierUpdateRequestDomain updateSupplierRequestDtoToDomain(SupplierUpdateRequestDto requestDto);
 

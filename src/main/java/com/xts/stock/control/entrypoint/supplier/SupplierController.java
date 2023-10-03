@@ -50,7 +50,7 @@ public class SupplierController {
 
         final List<SupplierDomain> responseDomain = getAllSuppliersUseCase.execute();
 
-        return supplierEntrypointMapper.getAllSuppliersDomainToEntity(responseDomain);
+        return supplierEntrypointMapper.getAllSuppliersDomainToDto(responseDomain);
     }
 
     @PostMapping("/update")
