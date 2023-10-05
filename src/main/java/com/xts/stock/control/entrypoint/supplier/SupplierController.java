@@ -4,6 +4,8 @@ import com.xts.stock.control.entrypoint.supplier.dto.*;
 import com.xts.stock.control.entrypoint.supplier.mapper.SupplierEntrypointMapper;
 import com.xts.stock.control.usecase.supplier.*;
 import com.xts.stock.control.usecase.supplier.domain.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,14 @@ public class SupplierController {
 
 
     @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Register new supplier",
+            description = "Should register new supplier",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private void registerNewSupplier(@RequestBody @Valid final SupplierDto requestDto) {
 
         final SupplierDomain requestDomain =
@@ -45,7 +54,14 @@ public class SupplierController {
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get all supplier",
+            description = "Should get all supplier",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private List<SupplierDto> registerNewSupplier() {
 
         final List<SupplierDomain> responseDomain = getAllSuppliersUseCase.execute();
@@ -54,7 +70,14 @@ public class SupplierController {
     }
 
     @PostMapping("/update")
-    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Supplier update",
+            description = "Should update a supplier",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private void updateSupplierInformations(@RequestBody @Valid final SupplierUpdateRequestDto requestDto) {
 
         final SupplierUpdateRequestDomain requestDomain =
@@ -64,7 +87,14 @@ public class SupplierController {
     }
 
     @PostMapping("/update/material")
-    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Material update",
+            description = "Should update a material",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private void updateMaterialInformations(@RequestBody @Valid final MaterialUpdateRequestDto requestDto) {
 
         final MaterialUpdateRequestDomain requestDomain =
@@ -74,14 +104,28 @@ public class SupplierController {
     }
 
     @DeleteMapping("/{supplierCnpj}")
-    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Delete supplier",
+            description = "Should delete a supplier",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private void deleteSupplier(@PathVariable("supplierCnpj") @Valid @NotBlank final String supplierCnpj) {
 
         supplierDeleteUseCase.execute(supplierCnpj);
     }
 
     @PostMapping("/delete-material")
-    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Delete material",
+            description = "Should delete a material",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private void deleteMaterial(@RequestBody @Valid final MaterialDeleteRequestDto requestDto) {
 
         final MaterialDeleteRequestDomain requestDomain =
@@ -91,7 +135,14 @@ public class SupplierController {
     }
 
     @PostMapping("/add-material")
-    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Add material",
+            description = "Should add a material",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private void addMaterial(@RequestBody @Valid final MaterialAddRequestDto requestDto) {
 
         final MaterialAddRequestDomain requestDomain =

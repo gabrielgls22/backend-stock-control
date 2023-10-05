@@ -2,6 +2,7 @@ package com.xts.stock.control.entrypoint.costumer.mapper;
 
 import com.xts.stock.control.entrypoint.costumer.dto.*;
 import com.xts.stock.control.usecase.costumer.domain.*;
+import com.xts.stock.control.utils.Utils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,7 @@ public class CostumerEntrypointMapperImpl implements CostumerEntrypointMapper {
                 CostumerDomain.builder();
 
         if (Objects.nonNull(requestDto)) {
-            costumerDomainBuilder.costumerCnpj(removeSignals(requestDto.getCostumerCnpj().trim()));
+            costumerDomainBuilder.costumerCnpj(Utils.removeSignals(requestDto.getCostumerCnpj().trim()));
             costumerDomainBuilder.costumerName(requestDto.getCostumerName().trim());
             costumerDomainBuilder.tagList(responseTagListDtoToDomain(requestDto.getTagList()));
         }
@@ -51,8 +52,8 @@ public class CostumerEntrypointMapperImpl implements CostumerEntrypointMapper {
                 CostumerUpdateRequestDomain.builder();
 
         if (Objects.nonNull(requestDto)) {
-            costumerUpdateRequestDomainBuilder.cnpj(removeSignals(requestDto.getCnpj().trim()));
-            costumerUpdateRequestDomainBuilder.newCnpj(removeSignals(requestDto.getNewCnpj().trim()));
+            costumerUpdateRequestDomainBuilder.cnpj(Utils.removeSignals(requestDto.getCnpj().trim()));
+            costumerUpdateRequestDomainBuilder.newCnpj(Utils.removeSignals(requestDto.getNewCnpj().trim()));
             costumerUpdateRequestDomainBuilder.newCostumer(requestDto.getNewCostumer().trim());
         }
 
@@ -65,7 +66,7 @@ public class CostumerEntrypointMapperImpl implements CostumerEntrypointMapper {
                 TagUpdateRequestDomain.builder();
 
         if (Objects.nonNull(requestDto)) {
-            tagUpdateRequestDomainBuilder.cnpj(removeSignals(requestDto.getCnpj().trim()));
+            tagUpdateRequestDomainBuilder.cnpj(Utils.removeSignals(requestDto.getCnpj().trim()));
             tagUpdateRequestDomainBuilder.code(requestDto.getCode().trim());
             tagUpdateRequestDomainBuilder.name(requestDto.getName().trim());
         }
@@ -79,7 +80,7 @@ public class CostumerEntrypointMapperImpl implements CostumerEntrypointMapper {
                 TagDeleteRequestDomain.builder();
 
         if (Objects.nonNull(requestDto)) {
-            tagDeleteRequestDomainBuilder.costumerCnpj(removeSignals(requestDto.getCostumerCnpj().trim()));
+            tagDeleteRequestDomainBuilder.costumerCnpj(Utils.removeSignals(requestDto.getCostumerCnpj().trim()));
             tagDeleteRequestDomainBuilder.tagCode(requestDto.getTagCode().trim());
         }
 
@@ -92,9 +93,10 @@ public class CostumerEntrypointMapperImpl implements CostumerEntrypointMapper {
                 TagAddRequestDomain.builder();
 
         if (Objects.nonNull(requestDto)) {
-            tagAddRequestDomainBuilder.costumerCnpj(removeSignals(requestDto.getCostumerCnpj().trim()));
+            tagAddRequestDomainBuilder.costumerCnpj(Utils.removeSignals(requestDto.getCostumerCnpj().trim()));
             tagAddRequestDomainBuilder.code(
-                    !Strings.isBlank(requestDto.getCode()) ? requestDto.getCode().trim() : generateUniqueNumber());
+                    !Strings.isBlank(requestDto.getCode()) ? requestDto.getCode().trim() :
+                            Utils.generateUniqueNumber());
             tagAddRequestDomainBuilder.name(requestDto.getName().trim());
         }
 
@@ -106,7 +108,7 @@ public class CostumerEntrypointMapperImpl implements CostumerEntrypointMapper {
 
         tagDtoList.forEach(tag -> {
             final TagDomain tagDomain = TagDomain.builder()
-                    .code(!Strings.isBlank(tag.getCode()) ? tag.getCode().trim() : generateUniqueNumber())
+                    .code(!Strings.isBlank(tag.getCode()) ? tag.getCode().trim() : Utils.generateUniqueNumber())
                     .name(tag.getName().trim())
                     .build();
 
@@ -129,18 +131,5 @@ public class CostumerEntrypointMapperImpl implements CostumerEntrypointMapper {
         });
 
         return tagDtoList;
-    }
-
-    protected static String generateUniqueNumber() {
-        SecureRandom secureRandom = new SecureRandom();
-        byte[] randomBytes = new byte[4];
-        secureRandom.nextBytes(randomBytes);
-        BigInteger bigInteger = new BigInteger(1, randomBytes);
-        String uniqueNumber = bigInteger.toString(10);
-        return uniqueNumber.substring(0, 8);
-    }
-
-    protected static String removeSignals(final String valueWithSignals) {
-        return valueWithSignals.replaceAll("[./-]", "");
     }
 }

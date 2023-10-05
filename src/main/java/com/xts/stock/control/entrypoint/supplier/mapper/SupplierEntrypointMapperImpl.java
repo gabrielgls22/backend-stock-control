@@ -2,6 +2,7 @@ package com.xts.stock.control.entrypoint.supplier.mapper;
 
 import com.xts.stock.control.entrypoint.supplier.dto.*;
 import com.xts.stock.control.usecase.supplier.domain.*;
+import com.xts.stock.control.utils.Utils;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
@@ -20,7 +21,7 @@ public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper{
         if (Objects.nonNull(requestDto)) {
             supplierRequestDomainBuilder.supplierName(requestDto.getSupplierName().trim());
             supplierRequestDomainBuilder.supplierCnpj(
-                    removeSignals(requestDto.getSupplierCnpj().trim()));
+                    Utils.removeSignals(requestDto.getSupplierCnpj().trim()));
             supplierRequestDomainBuilder.materialList(responseMaterialListDtoToDomain(requestDto.getMaterialList()));
         }
 
@@ -33,8 +34,7 @@ public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper{
 
         responseDomain.forEach(supplierDomain -> {
             final SupplierDto supplierDto = SupplierDto.builder()
-                    .supplierCnpj(supplierDomain.getSupplierCnpj()
-                            .replaceAll("(\\d{2})(\\d{3})(\\d{3})(\\d{4})(\\d{2})", "$1.$2.$3/$4-$5"))
+                    .supplierCnpj(Utils.cnpjRegex(supplierDomain.getSupplierCnpj()))
                     .supplierName(supplierDomain.getSupplierName())
                     .materialList(responseMaterialListDomainToDto(supplierDomain.getMaterialList()))
                     .build();
@@ -51,8 +51,8 @@ public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper{
                 SupplierUpdateRequestDomain.builder();
 
         if (Objects.nonNull(requestDto)) {
-            supplierUpdateRequestDomainBuilder.cnpj(removeSignals(requestDto.getCnpj().trim()));
-            supplierUpdateRequestDomainBuilder.newCnpj(removeSignals(requestDto.getNewCnpj().trim()));
+            supplierUpdateRequestDomainBuilder.cnpj(Utils.removeSignals(requestDto.getCnpj().trim()));
+            supplierUpdateRequestDomainBuilder.newCnpj(Utils.removeSignals(requestDto.getNewCnpj().trim()));
             supplierUpdateRequestDomainBuilder.newSupplier(requestDto.getNewSupplier().trim());
         }
 
@@ -65,7 +65,7 @@ public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper{
                 MaterialUpdateRequestDomain.builder();
 
         if (Objects.nonNull(requestDto)) {
-            materialUpdateRequestDomainBuilder.cnpj(removeSignals(requestDto.getCnpj().trim()));
+            materialUpdateRequestDomainBuilder.cnpj(Utils.removeSignals(requestDto.getCnpj().trim()));
             materialUpdateRequestDomainBuilder.code(requestDto.getCode().trim());
             materialUpdateRequestDomainBuilder.name(requestDto.getName().trim());
             materialUpdateRequestDomainBuilder.description(requestDto.getDescription());
@@ -80,7 +80,7 @@ public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper{
                 MaterialDeleteRequestDomain.builder();
 
         if (Objects.nonNull(requestDto)) {
-            materialDeleteRequestDomainBuilder.supplierCnpj(removeSignals(requestDto.getSupplierCnpj()));
+            materialDeleteRequestDomainBuilder.supplierCnpj(Utils.removeSignals(requestDto.getSupplierCnpj()));
             materialDeleteRequestDomainBuilder.materialCode(requestDto.getMaterialCode());
         }
 
@@ -93,8 +93,8 @@ public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper{
                 MaterialAddRequestDomain.builder();
 
         if (Objects.nonNull(requestDto)) {
-            materialAddRequestDomainBuilder.supplierCnpj(removeSignals(requestDto.getSupplierCnpj().trim()));
-            materialAddRequestDomainBuilder.code(generateUniqueNumber());
+            materialAddRequestDomainBuilder.supplierCnpj(Utils.removeSignals(requestDto.getSupplierCnpj().trim()));
+            materialAddRequestDomainBuilder.code(Utils.generateUniqueNumber());
             materialAddRequestDomainBuilder.name(requestDto.getName().trim());
             materialAddRequestDomainBuilder.description(requestDto.getDescription().trim());
         }
@@ -107,7 +107,7 @@ public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper{
 
         materialDtoList.forEach(material -> {
             final MaterialDomain materialDomain = MaterialDomain.builder()
-                    .code(generateUniqueNumber())
+                    .code(Utils.generateUniqueNumber())
                     .name(material.getName().trim())
                     .description(material.getDescription().trim())
                     .build();
@@ -132,19 +132,5 @@ public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper{
         });
 
         return materialDtoList;
-    }
-
-
-    protected static String generateUniqueNumber() {
-        SecureRandom secureRandom = new SecureRandom();
-        byte[] randomBytes = new byte[4];
-        secureRandom.nextBytes(randomBytes);
-        BigInteger bigInteger = new BigInteger(1, randomBytes);
-        String uniqueNumber = bigInteger.toString(10);
-        return uniqueNumber.substring(0, 8);
-    }
-
-    protected static String removeSignals(final String valueWithSignals) {
-        return valueWithSignals.replaceAll("[./-]", "");
     }
 }

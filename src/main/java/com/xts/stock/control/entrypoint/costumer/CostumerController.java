@@ -4,6 +4,8 @@ import com.xts.stock.control.entrypoint.costumer.dto.*;
 import com.xts.stock.control.entrypoint.costumer.mapper.CostumerEntrypointMapper;
 import com.xts.stock.control.usecase.costumer.*;
 import com.xts.stock.control.usecase.costumer.domain.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,14 @@ public class CostumerController {
 
 
     @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Register new customer",
+            description = "Should register new customer",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private void registerNewCostumer(@RequestBody @Valid final CostumerDto requestDto) {
 
         final CostumerDomain requestDomain =
@@ -45,7 +54,14 @@ public class CostumerController {
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get all customer",
+            description = "Should get all customer",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private List<CostumerDto> registerNewCostumer() {
 
         final List<CostumerDomain> responseDomain = getAllCostumersUseCase.execute();
@@ -54,7 +70,14 @@ public class CostumerController {
     }
 
     @PostMapping("/update")
-    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Customer update",
+            description = "Should update a customer",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private void updateCostumerInformations(@RequestBody @Valid final CostumerUpdateRequestDto requestDto) {
 
         final CostumerUpdateRequestDomain requestDomain =
@@ -64,7 +87,14 @@ public class CostumerController {
     }
 
     @PostMapping("/update/tag")
-    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Material update",
+            description = "Should update a tag",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private void updateTagInformations(@RequestBody @Valid final TagUpdateRequestDto requestDto) {
 
         final TagUpdateRequestDomain requestDomain =
@@ -74,14 +104,28 @@ public class CostumerController {
     }
 
     @DeleteMapping("/{costumerCnpj}")
-    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Delete customer",
+            description = "Should delete a customer",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private void deleteCostumer(@PathVariable("costumerCnpj") @Valid @NotBlank final String costumerCnpj) {
 
         costumerDeleteUseCase.execute(costumerCnpj);
     }
 
     @PostMapping("/delete-tag")
-    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Delete tag",
+            description = "Should delete a tag",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private void deleteTag(@RequestBody @Valid final TagDeleteRequestDto requestDto) {
 
         final TagDeleteRequestDomain requestDomain =
@@ -91,7 +135,14 @@ public class CostumerController {
     }
 
     @PostMapping("/add-tag")
-    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Add tag",
+            description = "Should add a tag",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
     private void addTag(@RequestBody @Valid final TagAddRequestDto requestDto) {
 
         final TagAddRequestDomain requestDomain =
