@@ -28,7 +28,7 @@ public class SupplierRepository {
            return supplierDbRepository.findAll();
 
         } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to save new supplier in db, with log: " + e.getMessage());
+            throw new RuntimeException("Error trying to get all supplier in db, with log: " + e.getMessage());
         }
     }
 

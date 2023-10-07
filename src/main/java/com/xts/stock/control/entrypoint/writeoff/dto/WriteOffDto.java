@@ -26,5 +26,8 @@ public class WriteOffDto {
     @NotBlank(message = "Tag name is required")
     private String tagName;
 
+    @NotBlank(message = "Write off description is required")
+    private String description;
+
     private List<WriteOffMaterialsDto> materials;
 }

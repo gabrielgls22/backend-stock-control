@@ -1,11 +1,13 @@
 package com.xts.stock.control.entrypoint.writeoff;
 
+import com.xts.stock.control.entrypoint.writeoff.dto.DeleteWriteOffDto;
 import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffDayDto;
 import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffDto;
 import com.xts.stock.control.entrypoint.writeoff.mapper.WriteOffEntrypointMapper;
 import com.xts.stock.control.usecase.writeoff.GetDayWriteOffUseCase;
 import com.xts.stock.control.usecase.writeoff.WriteOffDeleteUseCase;
 import com.xts.stock.control.usecase.writeoff.WriteOffRegisterUseCase;
+import com.xts.stock.control.usecase.writeoff.domain.DeleteWriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -64,7 +66,7 @@ public class WriteOffController {
         return writeOffEntrypointMapper.getAllWriteOffsDomainToDto(responseDomain);
     }
 
-    @DeleteMapping("/{writeOffCnpj}")
+    @PostMapping("/delete")
     @Operation(summary = "Delete write off",
             description = "Should delete a specific writeOff",
             responses = {
@@ -73,8 +75,10 @@ public class WriteOffController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void deleteWriteOff(@PathVariable("writeOffCnpj") @Valid @NotBlank final String writeOffCnpj) {
+    private void deleteWriteOff(@RequestBody @Valid @NotBlank final DeleteWriteOffDto requestDto) {
 
-        writeOffDeleteUseCase.execute(writeOffCnpj);
+        final DeleteWriteOffDomain requestDomain = writeOffEntrypointMapper.deleteWriteOffDtoToDomain(requestDto);
+
+        writeOffDeleteUseCase.execute(requestDomain);
     }
 }

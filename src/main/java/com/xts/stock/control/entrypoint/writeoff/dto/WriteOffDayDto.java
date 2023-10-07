@@ -1,5 +1,6 @@
 package com.xts.stock.control.entrypoint.writeoff.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WriteOffDayDto {
+
+    @NotBlank(message = "Write off date is required")
+    private String writeOffDate;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String writeOffCode;
 
     @NotBlank(message = "Costumer cnpj is required")
     private String costumerCnpj;
@@ -30,5 +37,5 @@ public class WriteOffDayDto {
     private String description;
 
     @NotBlank(message = "Material information")
-    private List<WriteOffDayMaterialsDto> materials;
+    private List<WriteOffMaterialsDto> materials;
 }

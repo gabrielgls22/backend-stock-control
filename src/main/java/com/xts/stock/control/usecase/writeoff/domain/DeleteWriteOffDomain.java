@@ -5,20 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WriteOffDomain {
+public class DeleteWriteOffDomain {
 
     private String writeOffDate;
     private String writeOffCode;
-    private String costumerCnpj;
-    private String costumerName;
-    private String tagCode;
-    private String tagName;
-    private String description;
-    private List<WriteOffMaterialsDomain> materials;
 }

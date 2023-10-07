@@ -1,4 +1,4 @@
-package com.xts.stock.control.dataprovider.writeoff.entity;
+package com.xts.stock.control.usecase.stock.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WriteOffMaterialEntity {
+public class DeleteMaterialStockDomain {
 
+    private String supplierName;
+    private String materialName;
     private String barCode;
-    private String name;
-    private String supplier;
-    private String batch;
 }

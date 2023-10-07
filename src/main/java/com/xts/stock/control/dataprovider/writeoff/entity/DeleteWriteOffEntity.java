@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WriteOffMaterialEntity {
+public class DeleteWriteOffEntity {
 
-    private String barCode;
-    private String name;
-    private String supplier;
-    private String batch;
+    private String writeOffDate;
+    private String writeOffCode;
 }

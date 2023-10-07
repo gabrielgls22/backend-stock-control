@@ -1,8 +1,10 @@
 package com.xts.stock.control.dataprovider.writeoff.mapper;
 
+import com.xts.stock.control.dataprovider.writeoff.entity.DeleteWriteOffEntity;
 import com.xts.stock.control.dataprovider.writeoff.entity.WriteOffDetailsEntity;
 import com.xts.stock.control.dataprovider.writeoff.entity.WriteOffEntity;
 import com.xts.stock.control.dataprovider.writeoff.entity.WriteOffMaterialEntity;
+import com.xts.stock.control.usecase.writeoff.domain.DeleteWriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffMaterialsDomain;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,40 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
         return writeOffEntityBuilder.build();
     }
 
+    @Override
+    public List<WriteOffDomain> getAllWriteOffsEntityToDomain(final List<WriteOffDetailsEntity> responseEntity) {
+        final List<WriteOffDomain> writeOffDomainList = new ArrayList<>();
+
+        responseEntity.forEach(writeOffEntity -> {
+            final WriteOffDomain writeOffDomain = WriteOffDomain.builder()
+                    .writeOffCode(writeOffEntity.getWriteOffCode())
+                    .costumerCnpj(writeOffEntity.getCostumerCnpj())
+                    .costumerName(writeOffEntity.getCostumerName())
+                    .tagCode(writeOffEntity.getTagCode())
+                    .tagName(writeOffEntity.getTagName())
+                    .description(writeOffEntity.getDescription())
+                    .materials(responseWriteOffMaterialsEntityToDomain(writeOffEntity.getMaterials()))
+                    .build();
+
+            writeOffDomainList.add(writeOffDomain);
+        });
+
+        return writeOffDomainList;
+    }
+
+    @Override
+    public DeleteWriteOffEntity deleteWriteOffDomainToEntity(final DeleteWriteOffDomain requestDomain) {
+        final DeleteWriteOffEntity.DeleteWriteOffEntityBuilder deleteWriteOffEntityBuilder =
+                DeleteWriteOffEntity.builder();
+
+        if (Objects.nonNull(requestDomain)) {
+            deleteWriteOffEntityBuilder.writeOffDate(requestDomain.getWriteOffDate());
+            deleteWriteOffEntityBuilder.writeOffCode(requestDomain.getWriteOffCode());
+        }
+
+        return deleteWriteOffEntityBuilder.build();
+    }
+
     protected List<WriteOffDetailsEntity> returnWriteOffListDomainToEntity(final WriteOffDomain requestDomain) {
         final List<WriteOffDetailsEntity> writeOffDetailsEntityList = new ArrayList<>();
 
@@ -36,6 +72,7 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
                 .costumerName(requestDomain.getCostumerName())
                 .tagCode(requestDomain.getTagCode())
                 .tagName(requestDomain.getTagName())
+                .description(requestDomain.getDescription())
                 .materials(returnMaterialsDomainToEntity(requestDomain.getMaterials()))
                 .build();
 
@@ -51,12 +88,32 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
         materialsDomainList.forEach(material -> {
             final WriteOffMaterialEntity materialEntity = WriteOffMaterialEntity.builder()
                     .barCode(material.getBarCode())
-                    .description(material.getDescription())
+                    .name(material.getName())
+                    .supplier(material.getSupplier())
+                    .batch(material.getBatch())
                     .build();
 
             materialsEntityList.add(materialEntity);
         });
 
         return materialsEntityList;
+    }
+
+    protected List<WriteOffMaterialsDomain> responseWriteOffMaterialsEntityToDomain(
+            final List<WriteOffMaterialEntity> writeOffMaterialEntityList) {
+        final List<WriteOffMaterialsDomain> writeOffMaterialsDomainList = new ArrayList<>();
+
+        writeOffMaterialEntityList.forEach(materialEntity -> {
+            final WriteOffMaterialsDomain materialsDomain = WriteOffMaterialsDomain.builder()
+                    .barCode(materialEntity.getBarCode())
+                    .name(materialEntity.getName())
+                    .supplier(materialEntity.getSupplier())
+                    .batch(materialEntity.getBatch())
+                    .build();
+
+            writeOffMaterialsDomainList.add(materialsDomain);
+        });
+
+        return writeOffMaterialsDomainList;
     }
 }

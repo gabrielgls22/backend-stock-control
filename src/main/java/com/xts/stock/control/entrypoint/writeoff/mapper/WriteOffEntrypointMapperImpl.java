@@ -1,8 +1,10 @@
 package com.xts.stock.control.entrypoint.writeoff.mapper;
 
+import com.xts.stock.control.entrypoint.writeoff.dto.DeleteWriteOffDto;
 import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffDayDto;
 import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffDto;
 import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffMaterialsDto;
+import com.xts.stock.control.usecase.writeoff.domain.DeleteWriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffMaterialsDomain;
 import com.xts.stock.control.utils.Utils;
@@ -25,6 +27,7 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
             writeOffDomainBuilder.costumerName(requestDto.getCostumerName().trim());
             writeOffDomainBuilder.tagCode(requestDto.getTagCode().trim());
             writeOffDomainBuilder.tagName(requestDto.getTagName().trim());
+            writeOffDomainBuilder.description(requestDto.getDescription().trim());
             writeOffDomainBuilder.materials(responseTagListDtoToDomain(requestDto.getMaterials()));
         }
 
@@ -32,8 +35,37 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
     }
 
     @Override
-    public List<WriteOffDayDto> getAllWriteOffsDomainToDto(final List<WriteOffDomain> responseDomain) {
-        return null;
+    public List<WriteOffDayDto> getAllWriteOffsDomainToDto(final List<WriteOffDomain> writeOffDomainList) {
+        final List<WriteOffDayDto> writeOffDayDtoList = new ArrayList<>();
+
+        writeOffDomainList.forEach(writeOffDomain -> {
+            final WriteOffDayDto writeOffDayDto = WriteOffDayDto.builder()
+                    .writeOffCode(writeOffDomain.getWriteOffCode())
+                    .costumerCnpj(Utils.cnpjRegex(writeOffDomain.getCostumerCnpj()))
+                    .costumerName(writeOffDomain.getCostumerName())
+                    .tagCode(writeOffDomain.getTagCode())
+                    .tagName(writeOffDomain.getTagName())
+                    .description(writeOffDomain.getDescription())
+                    .materials(responseWriteOffMaterialsDomainToDto(writeOffDomain.getMaterials()))
+                    .build();
+
+            writeOffDayDtoList.add(writeOffDayDto);
+        });
+
+        return writeOffDayDtoList;
+    }
+
+    @Override
+    public DeleteWriteOffDomain deleteWriteOffDtoToDomain(final DeleteWriteOffDto requestDto) {
+        final DeleteWriteOffDomain.DeleteWriteOffDomainBuilder writeOffDomainBuilder =
+                DeleteWriteOffDomain.builder();
+
+        if (Objects.nonNull(requestDto)) {
+            writeOffDomainBuilder.writeOffDate(requestDto.getWriteOffDate());
+            writeOffDomainBuilder.writeOffCode(requestDto.getWriteOffCode());
+        }
+
+        return writeOffDomainBuilder.build();
     }
 
     protected List<WriteOffMaterialsDomain> responseTagListDtoToDomain(
@@ -43,12 +75,30 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
         writeOffDtoList.forEach(writeOffDto -> {
             final WriteOffMaterialsDomain writeOffDomain = WriteOffMaterialsDomain.builder()
                     .barCode(writeOffDto.getBarCode().trim())
-                    .description(writeOffDto.getDescription().trim())
                     .build();
 
             writeOffMaterialsDomainList.add(writeOffDomain);
         });
 
         return writeOffMaterialsDomainList;
+    }
+
+    protected List<WriteOffMaterialsDto> responseWriteOffMaterialsDomainToDto(
+            final List<WriteOffMaterialsDomain> materialsDomainList) {
+
+        final List<WriteOffMaterialsDto> writeOffMaterialsDtoList = new ArrayList<>();
+
+        materialsDomainList.forEach(materialDomain -> {
+            final WriteOffMaterialsDto materialsDto = WriteOffMaterialsDto.builder()
+                    .barCode(materialDomain.getBarCode())
+                    .name(materialDomain.getName())
+                    .supplier(materialDomain.getSupplier())
+                    .batch(materialDomain.getBatch())
+                    .build();
+
+            writeOffMaterialsDtoList.add(materialsDto);
+        });
+
+        return writeOffMaterialsDtoList;
     }
 }
