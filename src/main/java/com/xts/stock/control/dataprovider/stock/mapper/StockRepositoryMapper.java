@@ -11,4 +11,6 @@ public interface StockRepositoryMapper {
     List<StockDomain> getAllStockEntityToDomain(List<StockEntity> responseEntity);
 
     DeleteMaterialStockEntity deleteMaterialDomainToEntity(DeleteMaterialStockDomain requestDomain);
+
+    StockEntity registerStockDomainToEntity(StockDomain requestDomain);
 }

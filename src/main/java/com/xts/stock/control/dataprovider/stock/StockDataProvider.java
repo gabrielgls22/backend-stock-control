@@ -35,4 +35,12 @@ public class StockDataProvider implements StockGateway {
 
         stockRepository.deleteMaterial(requestEntity);
     }
+
+    @Override
+    public void registerStock(final StockDomain requestDomain) {
+        final StockEntity requestEntity =
+                stockRepositoryMapper.registerStockDomainToEntity(requestDomain);
+
+        stockRepository.registerStock(requestEntity);
+    }
 }

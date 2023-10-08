@@ -10,4 +10,6 @@ public interface StockGateway {
     List<StockDomain> getAllStock();
 
     void deleteMaterial(DeleteMaterialStockDomain requestDomain);
+
+    void registerStock(StockDomain requestDomain);
 }

@@ -49,6 +49,18 @@ public class StockRepositoryMapperImpl implements StockRepositoryMapper{
         return deleteMaterialStockEntityBuilder.build();
     }
 
+    @Override
+    public StockEntity registerStockDomainToEntity(final StockDomain requestDomain) {
+        final StockEntity.StockEntityBuilder stockEntityBuilder = StockEntity.builder();
+
+        if (Objects.nonNull(requestDomain)) {
+            stockEntityBuilder.id(requestDomain.getSupplierName());
+            stockEntityBuilder.materialList(responseStockMaterialListDomainToEntity(requestDomain.getMaterialList()));
+        }
+
+        return stockEntityBuilder.build();
+    }
+
     protected List<StockMaterialDomain> responseStockMaterialListEntityToDomain(
             final List<StockMaterialEntity> stockMaterialEntityList) {
 
@@ -92,5 +104,41 @@ public class StockRepositoryMapperImpl implements StockRepositoryMapper{
         }
 
         return materialDetailsDomainList;
+    }
+
+    protected List<StockMaterialEntity> responseStockMaterialListDomainToEntity(
+            final List<StockMaterialDomain> materialDomainList) {
+
+        final List<StockMaterialEntity> stockMaterialEntityList = new ArrayList<>();
+
+        materialDomainList.forEach(materialDomain -> {
+            final StockMaterialEntity stockMaterialEntity = StockMaterialEntity.builder()
+                    .materialName(materialDomain.getMaterialName())
+                    .materialsDetails(responseMaterialDetailsDomainToEntity(materialDomain.getMaterialsDetails()))
+                    .build();
+
+            stockMaterialEntityList.add(stockMaterialEntity);
+        });
+
+        return stockMaterialEntityList;
+    }
+
+    private List<MaterialDetailsEntity> responseMaterialDetailsDomainToEntity(
+            final List<MaterialDetailsDomain> materialDetailsDomainList) {
+        final List<MaterialDetailsEntity> materialDetailsEntityList = new ArrayList<>();
+
+        materialDetailsDomainList.forEach(materialDetailsDomain -> {
+            final MaterialDetailsEntity materialDetailsEntity = MaterialDetailsEntity.builder()
+                    .batch(materialDetailsDomain.getBatch())
+                    .length(materialDetailsDomain.getLength())
+                    .width(materialDetailsDomain.getWidth())
+                    .quantity(1)
+                    .barCodes(materialDetailsDomain.getBarCodes())
+                    .build();
+
+            materialDetailsEntityList.add(materialDetailsEntity);
+        });
+
+        return materialDetailsEntityList;
     }
 }

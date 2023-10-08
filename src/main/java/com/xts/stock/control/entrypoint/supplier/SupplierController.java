@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -62,7 +61,7 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private List<SupplierDto> registerNewSupplier() {
+    private @ResponseBody List<SupplierDto> getAllSuppliers() {
 
         final List<SupplierDomain> responseDomain = getAllSuppliersUseCase.execute();
 
@@ -78,7 +77,7 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void updateSupplierInformations(@RequestBody @Valid final SupplierUpdateRequestDto requestDto) {
+    private void updateSupplierInformation(@RequestBody @Valid final SupplierUpdateRequestDto requestDto) {
 
         final SupplierUpdateRequestDomain requestDomain =
                 supplierEntrypointMapper.updateSupplierRequestDtoToDomain(requestDto);
@@ -95,7 +94,7 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void updateMaterialInformations(@RequestBody @Valid final MaterialUpdateRequestDto requestDto) {
+    private void updateMaterialInformation(@RequestBody @Valid final MaterialUpdateRequestDto requestDto) {
 
         final MaterialUpdateRequestDomain requestDomain =
                 supplierEntrypointMapper.updateMaterialRequestDtoToDomain(requestDto);

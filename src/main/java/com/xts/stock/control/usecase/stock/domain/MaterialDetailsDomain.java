@@ -16,6 +16,6 @@ public class MaterialDetailsDomain {
     private String batch;
     private String length;
     private String width;
-    private String quantity;
+    private Integer quantity;
     private List<String> barCodes;
 }

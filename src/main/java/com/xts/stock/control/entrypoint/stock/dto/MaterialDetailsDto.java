@@ -1,4 +1,4 @@
-package com.xts.stock.control.dataprovider.stock.entity;
+package com.xts.stock.control.entrypoint.stock.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MaterialDetailsEntity {
+public class MaterialDetailsDto {
 
     private String batch;
     private String length;

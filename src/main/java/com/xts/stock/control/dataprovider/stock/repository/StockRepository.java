@@ -3,6 +3,7 @@ package com.xts.stock.control.dataprovider.stock.repository;
 import com.xts.stock.control.dataprovider.stock.entity.DeleteMaterialStockEntity;
 import com.xts.stock.control.dataprovider.stock.entity.MaterialDetailsEntity;
 import com.xts.stock.control.dataprovider.stock.entity.StockEntity;
+import com.xts.stock.control.dataprovider.stock.entity.StockMaterialEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -53,7 +54,64 @@ public class StockRepository {
 
 
         } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to get all stock in db, with log: " + e.getMessage());
+            throw new RuntimeException("Error trying to delete stock in db, with log: " + e.getMessage());
+        }
+    }
+
+    public void registerStock(StockEntity requestEntity) {
+        try {
+            final String materialName = requestEntity.getMaterialList().get(0).getMaterialName();
+
+            final String batch = requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0).getBatch();
+            final String length = requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0).getLength();
+            final String width = requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0).getWidth();
+            final String barCode = requestEntity.getMaterialList().get(0)
+                    .getMaterialsDetails().get(0).getBarCodes().get(0);
+
+            stockDbRepository.findById(requestEntity.getId()).ifPresentOrElse(responseEntity -> {
+                         List<StockMaterialEntity> specificMaterialEntity = responseEntity.getMaterialList().stream()
+                                .filter(materialEntity -> materialName.equalsIgnoreCase(materialEntity.getMaterialName()))
+                                .toList();
+
+                        if (!specificMaterialEntity.isEmpty()) {
+                            specificMaterialEntity.forEach(materialEntity -> {
+                                List<MaterialDetailsEntity> specificMaterialDetails =
+                                        materialEntity.getMaterialsDetails().stream()
+                                                .filter(materialDetails -> batch.equals(materialDetails.getBatch()))
+                                                .filter(materialDetails -> length.equals(materialDetails.getLength()))
+                                                .filter(materialDetails -> width.equals(materialDetails.getWidth()))
+                                                .toList();
+
+                                if (!specificMaterialDetails.isEmpty()) {
+                                    final Integer newQuantity = specificMaterialDetails.get(0).getQuantity() + 1;
+
+                                    specificMaterialDetails.get(0).getBarCodes().add(barCode);
+                                    specificMaterialDetails.get(0).setQuantity(newQuantity);
+
+                                    stockDbRepository.save(responseEntity);
+
+                                } else {
+                                    materialEntity.getMaterialsDetails().add(
+                                            requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0));
+
+                                    stockDbRepository.save(responseEntity);
+                                }
+                            });
+
+                        } else {
+                            responseEntity.getMaterialList().add(requestEntity.getMaterialList().get(0));
+
+                            stockDbRepository.save(responseEntity);
+                        }
+
+                    },
+                    () -> {
+                        stockDbRepository.save(requestEntity);
+                    });
+
+
+        } catch (final RuntimeException e) {
+            throw new RuntimeException("Error trying to register stock in db, with log: " + e.getMessage());
         }
     }
 }
