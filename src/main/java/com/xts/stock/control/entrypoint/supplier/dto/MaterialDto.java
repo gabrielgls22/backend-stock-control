@@ -19,6 +19,5 @@ public class MaterialDto {
     @NotBlank(message = "Material name is required")
     private String name;
 
-    @NotBlank(message = "Material description is required")
     private String description;
 }

@@ -3,6 +3,7 @@ package com.xts.stock.control.entrypoint.supplier.mapper;
 import com.xts.stock.control.entrypoint.supplier.dto.*;
 import com.xts.stock.control.usecase.supplier.domain.*;
 import com.xts.stock.control.utils.Utils;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
@@ -12,7 +13,10 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
-public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper{
+public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper {
+
+    private static final String NO_DESCRIPTION = "Sem descrição";
+
     @Override
     public SupplierDomain createSupplierRequestDtoToDomain(final SupplierDto requestDto) {
         final SupplierDomain.SupplierDomainBuilder supplierRequestDomainBuilder =
@@ -125,7 +129,7 @@ public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper{
             final MaterialDto materialDto = MaterialDto.builder()
                     .code(material.getCode())
                     .name(material.getName())
-                    .description(material.getDescription())
+                    .description(Strings.isBlank(material.getDescription()) ? NO_DESCRIPTION : material.getDescription())
                     .build();
 
             materialDtoList.add(materialDto);

@@ -1,9 +1,7 @@
 package com.xts.stock.control.entrypoint.stock.mapper;
 
-import com.xts.stock.control.entrypoint.stock.dto.MaterialDetailsDto;
-import com.xts.stock.control.entrypoint.stock.dto.StockDto;
-import com.xts.stock.control.entrypoint.stock.dto.StockMaterialDto;
-import com.xts.stock.control.entrypoint.stock.dto.StockResponseDto;
+import com.xts.stock.control.entrypoint.stock.dto.*;
+import com.xts.stock.control.usecase.stock.domain.DeleteMaterialStockDomain;
 import com.xts.stock.control.usecase.stock.domain.MaterialDetailsDomain;
 import com.xts.stock.control.usecase.stock.domain.StockDomain;
 import com.xts.stock.control.usecase.stock.domain.StockMaterialDomain;
@@ -41,6 +39,20 @@ public class StockEntrypointMapperImpl implements StockEntrypointMapper{
         });
 
         return stockResponseDtoList;
+    }
+
+    @Override
+    public DeleteMaterialStockDomain deleteMaterialStockDtoToDomain(final DeleteMaterialStockDto requestDto) {
+        final DeleteMaterialStockDomain.DeleteMaterialStockDomainBuilder deleteMaterialStockDomainBuilder =
+                DeleteMaterialStockDomain.builder();
+
+        if (Objects.nonNull(requestDto)) {
+            deleteMaterialStockDomainBuilder.supplierName(requestDto.getSupplierName());
+            deleteMaterialStockDomainBuilder.materialName(requestDto.getMaterialName());
+            deleteMaterialStockDomainBuilder.barCode(requestDto.getBarCode());
+        }
+
+        return deleteMaterialStockDomainBuilder.build();
     }
 
     private List<StockMaterialDomain> responseMaterialListDomain(final StockDto requestDto) {

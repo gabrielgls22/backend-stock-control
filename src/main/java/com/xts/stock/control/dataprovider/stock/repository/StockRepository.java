@@ -26,10 +26,12 @@ public class StockRepository {
     }
 
     public void deleteMaterial(final DeleteMaterialStockEntity requestEntity) {
-        try{
+        try {
             final StockEntity stockEntity = stockDbRepository.findById(requestEntity.getSupplierName())
                     .orElseThrow(() -> new RuntimeException("Error trying to get stock in db for supplier: " +
                             requestEntity.getSupplierName()));
+
+            List<StockMaterialEntity> materialsToRemove = new ArrayList<>();
 
             stockEntity.getMaterialList().stream()
                     .filter(material -> requestEntity.getMaterialName().equalsIgnoreCase(material.getMaterialName()))
@@ -42,15 +44,27 @@ public class StockRepository {
                                     materialDetails.getBarCodes().removeIf(barCode ->
                                             requestEntity.getBarCode().equalsIgnoreCase(barCode));
 
+                                    materialDetails.setQuantity(materialDetails.getBarCodes().size());
+
                                     if (!materialDetails.getBarCodes().isEmpty()) {
                                         updatedDetailsList.add(materialDetails);
                                     }
                                 });
 
                         filteredMaterial.setMaterialsDetails(updatedDetailsList);
+
+                        if (filteredMaterial.getMaterialsDetails().isEmpty()) {
+                            materialsToRemove.add(filteredMaterial);
+                        }
                     });
 
-            stockDbRepository.save(stockEntity);
+            stockEntity.getMaterialList().removeAll(materialsToRemove);
+
+            if (stockEntity.getMaterialList().isEmpty()) {
+                stockDbRepository.deleteById(stockEntity.getId());
+            } else {
+                stockDbRepository.save(stockEntity);
+            }
 
 
         } catch (final RuntimeException e) {
@@ -62,7 +76,6 @@ public class StockRepository {
         try {
             final String materialName = requestEntity.getMaterialList().get(0).getMaterialName();
 
-            final String batch = requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0).getBatch();
             final String length = requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0).getLength();
             final String width = requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0).getWidth();
             final String barCode = requestEntity.getMaterialList().get(0)
@@ -77,7 +90,6 @@ public class StockRepository {
                             specificMaterialEntity.forEach(materialEntity -> {
                                 List<MaterialDetailsEntity> specificMaterialDetails =
                                         materialEntity.getMaterialsDetails().stream()
-                                                .filter(materialDetails -> batch.equals(materialDetails.getBatch()))
                                                 .filter(materialDetails -> length.equals(materialDetails.getLength()))
                                                 .filter(materialDetails -> width.equals(materialDetails.getWidth()))
                                                 .toList();

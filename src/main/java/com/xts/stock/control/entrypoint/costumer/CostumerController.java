@@ -62,7 +62,7 @@ public class CostumerController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private List<CostumerDto> registerNewCostumer() {
+    private @ResponseBody List<CostumerDto> registerNewCostumer() {
 
         final List<CostumerDomain> responseDomain = getAllCostumersUseCase.execute();
 

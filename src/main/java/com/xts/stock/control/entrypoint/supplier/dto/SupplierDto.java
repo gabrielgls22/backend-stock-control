@@ -1,5 +1,6 @@
 package com.xts.stock.control.entrypoint.supplier.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,5 +23,5 @@ public class SupplierDto {
     private String supplierCnpj;
 
     @NotNull(message = "Material list is required")
-    private List<MaterialDto> materialList;
+    private List<@Valid MaterialDto> materialList;
 }

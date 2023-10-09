@@ -35,7 +35,7 @@ public class CostumerEntrypointMapperImpl implements CostumerEntrypointMapper {
 
         responseDomain.forEach(costumer -> {
             final CostumerDto costumerDto = CostumerDto.builder()
-                    .costumerCnpj(costumer.getCostumerCnpj())
+                    .costumerCnpj(Utils.cnpjRegex(costumer.getCostumerCnpj()))
                     .costumerName(costumer.getCostumerName())
                     .tagList(responseTagListDomainToDto(costumer.getTagList()))
                     .build();
