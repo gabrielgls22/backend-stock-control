@@ -132,7 +132,7 @@ public class StockRepositoryMapperImpl implements StockRepositoryMapper{
                     .batch(materialDetailsDomain.getBatch())
                     .length(materialDetailsDomain.getLength())
                     .width(materialDetailsDomain.getWidth())
-                    .quantity(1)
+                    .quantity(materialDetailsDomain.getBarCodes().size())
                     .barCodes(materialDetailsDomain.getBarCodes())
                     .build();
 

@@ -71,15 +71,11 @@ public class StockEntrypointMapperImpl implements StockEntrypointMapper{
     private List<MaterialDetailsDomain> responseMaterialDetailsDtoToDomain(final StockDto requestDto) {
         final List<MaterialDetailsDomain> materialDetailsDomainList = new ArrayList<>();
 
-        final List<String> barCodeList = new ArrayList<>();
-
-        barCodeList.add(requestDto.getBarCode());
-
         final MaterialDetailsDomain materialDetailsDomain = MaterialDetailsDomain.builder()
                 .batch(requestDto.getBatch())
                 .length(requestDto.getLength())
                 .width(requestDto.getWidth())
-                .barCodes(barCodeList)
+                .barCodes(requestDto.getBarCodes())
                 .build();
 
         materialDetailsDomainList.add(materialDetailsDomain);

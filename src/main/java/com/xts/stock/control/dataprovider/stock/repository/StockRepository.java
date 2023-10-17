@@ -78,8 +78,8 @@ public class StockRepository {
 
             final String length = requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0).getLength();
             final String width = requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0).getWidth();
-            final String barCode = requestEntity.getMaterialList().get(0)
-                    .getMaterialsDetails().get(0).getBarCodes().get(0);
+            final List<String> barCodeList = requestEntity.getMaterialList().get(0)
+                    .getMaterialsDetails().get(0).getBarCodes();
 
             stockDbRepository.findById(requestEntity.getId()).ifPresentOrElse(responseEntity -> {
                          List<StockMaterialEntity> specificMaterialEntity = responseEntity.getMaterialList().stream()
@@ -95,9 +95,12 @@ public class StockRepository {
                                                 .toList();
 
                                 if (!specificMaterialDetails.isEmpty()) {
-                                    final Integer newQuantity = specificMaterialDetails.get(0).getQuantity() + 1;
+                                    final Integer newQuantity = specificMaterialDetails.get(0).getQuantity() +
+                                            barCodeList.size() ;
 
-                                    specificMaterialDetails.get(0).getBarCodes().add(barCode);
+                                    barCodeList.forEach(barCode ->
+                                            specificMaterialDetails.get(0).getBarCodes().add(barCode));
+
                                     specificMaterialDetails.get(0).setQuantity(newQuantity);
 
                                     stockDbRepository.save(responseEntity);
@@ -117,9 +120,7 @@ public class StockRepository {
                         }
 
                     },
-                    () -> {
-                        stockDbRepository.save(requestEntity);
-                    });
+                    () -> stockDbRepository.save(requestEntity));
 
 
         } catch (final RuntimeException e) {

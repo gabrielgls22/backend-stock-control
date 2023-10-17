@@ -1,10 +1,13 @@
 package com.xts.stock.control.entrypoint.stock.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -12,8 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StockDto {
 
-    @NotBlank(message = "BarCode is required")
-    private String barCode;
+    private List<@Valid @NotBlank String> barCodes;
 
     @NotBlank(message = "Supplier name is required")
     private String supplierName;
