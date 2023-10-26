@@ -8,13 +8,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/costumer")
 public class CostumerController {
@@ -45,7 +48,7 @@ public class CostumerController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void registerNewCostumer(@RequestBody @Valid final CostumerDto requestDto) {
+    public void registerNewCostumer(@RequestBody @Valid @NotNull final CostumerDto requestDto) {
 
         final CostumerDomain requestDomain =
                 costumerEntrypointMapper.createCostumerRequestDtoToDomain(requestDto);
@@ -62,7 +65,7 @@ public class CostumerController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private @ResponseBody List<CostumerDto> registerNewCostumer() {
+    public @ResponseBody List<@Valid CostumerDto> registerNewCostumer() {
 
         final List<CostumerDomain> responseDomain = getAllCostumersUseCase.execute();
 
@@ -78,7 +81,7 @@ public class CostumerController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void updateCostumerInformations(@RequestBody @Valid final CostumerUpdateRequestDto requestDto) {
+    public void updateCostumerInformation(@RequestBody @Valid @NotNull final CostumerUpdateRequestDto requestDto) {
 
         final CostumerUpdateRequestDomain requestDomain =
                 costumerEntrypointMapper.updateCostumerRequestDtoToDomain(requestDto);
@@ -95,7 +98,7 @@ public class CostumerController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void updateTagInformations(@RequestBody @Valid final TagUpdateRequestDto requestDto) {
+    public void updateTagInformation(@RequestBody @Valid @NotNull final TagUpdateRequestDto requestDto) {
 
         final TagUpdateRequestDomain requestDomain =
                 costumerEntrypointMapper.updateTagRequestDtoToDomain(requestDto);
@@ -112,7 +115,7 @@ public class CostumerController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void deleteCostumer(@PathVariable("costumerCnpj") @Valid @NotBlank final String costumerCnpj) {
+    public void deleteCostumer(@PathVariable("costumerCnpj") @Valid @NotBlank final String costumerCnpj) {
 
         costumerDeleteUseCase.execute(costumerCnpj);
     }
@@ -126,7 +129,7 @@ public class CostumerController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void deleteTag(@RequestBody @Valid final TagDeleteRequestDto requestDto) {
+    public void deleteTag(@RequestBody @Valid @NotNull final TagDeleteRequestDto requestDto) {
 
         final TagDeleteRequestDomain requestDomain =
                 costumerEntrypointMapper.deleteTagRequestDtoToDomain(requestDto);
@@ -143,7 +146,7 @@ public class CostumerController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void addTag(@RequestBody @Valid final TagAddRequestDto requestDto) {
+    public void addTag(@RequestBody @Valid @NotNull final TagAddRequestDto requestDto) {
 
         final TagAddRequestDomain requestDomain =
                 costumerEntrypointMapper.addTagRequestDtoToDomain(requestDto);

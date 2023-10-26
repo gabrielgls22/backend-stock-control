@@ -12,12 +12,15 @@ import com.xts.stock.control.usecase.stock.domain.StockDomain;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/stock")
 public class StockController {
@@ -39,7 +42,7 @@ public class StockController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void registerNewStock(@RequestBody @Valid final StockDto requestDto) {
+    public void registerNewStock(@RequestBody @Valid final StockDto requestDto) {
 
         final StockDomain requestDomain =
                 stockEntrypointMapper.registerStockRequestDtoToDomain(requestDto);
@@ -56,7 +59,7 @@ public class StockController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private @ResponseBody List<StockResponseDto> getAllStock() {
+    public @NotNull @ResponseBody List<@Valid StockResponseDto> getAllStock() {
 
         final List<StockDomain> responseDomain = getAllStockUseCase.execute();
 
@@ -72,7 +75,7 @@ public class StockController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void deleteMaterialStock(@RequestBody @Valid final DeleteMaterialStockDto requestDto) {
+    public void deleteMaterialStock(@RequestBody @Valid @NotNull final DeleteMaterialStockDto requestDto) {
 
         final DeleteMaterialStockDomain requestDomain =
                 stockEntrypointMapper.deleteMaterialStockDtoToDomain(requestDto);

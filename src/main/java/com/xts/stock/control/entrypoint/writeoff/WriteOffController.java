@@ -13,12 +13,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/write-off")
 public class WriteOffController {
@@ -41,7 +44,7 @@ public class WriteOffController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void registerNewWriteOff(@RequestBody @Valid final WriteOffDto requestDto) {
+    public void registerNewWriteOff(@RequestBody @Valid @NotNull final WriteOffDto requestDto) {
 
         final WriteOffDomain requestDomain =
                 writeOffEntrypointMapper.createWriteOffRequestDtoToDomain(requestDto);
@@ -58,7 +61,7 @@ public class WriteOffController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private List<WriteOffDayDto> registerNewWriteOff(
+    public @ResponseBody List<@Valid WriteOffDayDto> registerNewWriteOff(
             @PathVariable("writeOffDate") @Valid @NotBlank final String writeOffDate) {
 
         final List<WriteOffDomain> responseDomain = getDayWriteOffUseCase.execute(writeOffDate);
@@ -75,7 +78,7 @@ public class WriteOffController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void deleteWriteOff(@RequestBody @Valid @NotBlank final DeleteWriteOffDto requestDto) {
+    public void deleteWriteOff(@RequestBody @Valid @NotNull final DeleteWriteOffDto requestDto) {
 
         final DeleteWriteOffDomain requestDomain = writeOffEntrypointMapper.deleteWriteOffDtoToDomain(requestDto);
 

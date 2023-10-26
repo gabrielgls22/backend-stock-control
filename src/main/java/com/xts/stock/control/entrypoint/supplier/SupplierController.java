@@ -8,12 +8,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/supplier")
 public class SupplierController {
@@ -44,7 +47,7 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void registerNewSupplier(@RequestBody @Valid final SupplierDto requestDto) {
+    public void registerNewSupplier(@RequestBody @NotNull @Valid final SupplierDto requestDto) {
 
         final SupplierDomain requestDomain =
                 supplierEntrypointMapper.createSupplierRequestDtoToDomain(requestDto);
@@ -61,7 +64,7 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private @ResponseBody List<SupplierDto> getAllSuppliers() {
+    public @ResponseBody List<@Valid SupplierDto> getAllSuppliers() {
 
         final List<SupplierDomain> responseDomain = getAllSuppliersUseCase.execute();
 
@@ -77,7 +80,7 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void updateSupplierInformation(@RequestBody @Valid final SupplierUpdateRequestDto requestDto) {
+    public void updateSupplierInformation(@RequestBody @NotNull @Valid final SupplierUpdateRequestDto requestDto) {
 
         final SupplierUpdateRequestDomain requestDomain =
                 supplierEntrypointMapper.updateSupplierRequestDtoToDomain(requestDto);
@@ -94,7 +97,7 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void updateMaterialInformation(@RequestBody @Valid final MaterialUpdateRequestDto requestDto) {
+    public void updateMaterialInformation(@RequestBody @Valid final MaterialUpdateRequestDto requestDto) {
 
         final MaterialUpdateRequestDomain requestDomain =
                 supplierEntrypointMapper.updateMaterialRequestDtoToDomain(requestDto);
@@ -111,7 +114,7 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void deleteSupplier(@PathVariable("supplierCnpj") @Valid @NotBlank final String supplierCnpj) {
+    public void deleteSupplier(@PathVariable("supplierCnpj") @NotBlank final String supplierCnpj) {
 
         supplierDeleteUseCase.execute(supplierCnpj);
     }
@@ -125,7 +128,7 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void deleteMaterial(@RequestBody @Valid final MaterialDeleteRequestDto requestDto) {
+    public void deleteMaterial(@RequestBody @NotNull @Valid final MaterialDeleteRequestDto requestDto) {
 
         final MaterialDeleteRequestDomain requestDomain =
                 supplierEntrypointMapper.deleteMaterialRequestDtoToDomain(requestDto);
@@ -142,7 +145,7 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    private void addMaterial(@RequestBody @Valid final MaterialAddRequestDto requestDto) {
+    public void addMaterial(@RequestBody @NotNull @Valid final MaterialAddRequestDto requestDto) {
 
         final MaterialAddRequestDomain requestDomain =
                 supplierEntrypointMapper.addMaterialRequestDtoToDomain(requestDto);

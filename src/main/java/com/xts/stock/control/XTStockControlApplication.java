@@ -2,9 +2,11 @@ package com.xts.stock.control;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @SpringBootApplication
+@ComponentScan(basePackages = "com.xts.stock.control")
 public class XTStockControlApplication {
 
 	public static void main(String[] args) {

@@ -19,5 +19,6 @@ public class MaterialDto {
     @NotBlank(message = "Material name is required")
     private String name;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String description;
 }
