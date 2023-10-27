@@ -62,7 +62,7 @@ public class WriteOffController {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
     public @ResponseBody List<@Valid WriteOffDayDto> registerNewWriteOff(
-            @PathVariable("writeOffDate") @Valid @NotBlank final String writeOffDate) {
+            @PathVariable("writeOffDate") @NotBlank final String writeOffDate) {
 
         final List<WriteOffDomain> responseDomain = getDayWriteOffUseCase.execute(writeOffDate);
 
