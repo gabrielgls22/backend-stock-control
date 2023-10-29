@@ -11,6 +11,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper {
@@ -72,7 +73,8 @@ public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper {
             materialUpdateRequestDomainBuilder.cnpj(Utils.removeSignals(requestDto.getCnpj().trim()));
             materialUpdateRequestDomainBuilder.code(requestDto.getCode().trim());
             materialUpdateRequestDomainBuilder.name(requestDto.getName().trim());
-            materialUpdateRequestDomainBuilder.description(requestDto.getDescription());
+            materialUpdateRequestDomainBuilder.description(
+                    Optional.ofNullable(requestDto.getDescription()).orElse(Strings.EMPTY));
         }
 
         return materialUpdateRequestDomainBuilder.build();
@@ -100,7 +102,8 @@ public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper {
             materialAddRequestDomainBuilder.supplierCnpj(Utils.removeSignals(requestDto.getSupplierCnpj().trim()));
             materialAddRequestDomainBuilder.code(Utils.generateUniqueNumber());
             materialAddRequestDomainBuilder.name(requestDto.getName().trim());
-            materialAddRequestDomainBuilder.description(requestDto.getDescription().trim());
+            materialAddRequestDomainBuilder.description(
+                    Optional.ofNullable(requestDto.getDescription()).orElse(Strings.EMPTY));
         }
 
         return materialAddRequestDomainBuilder.build();
