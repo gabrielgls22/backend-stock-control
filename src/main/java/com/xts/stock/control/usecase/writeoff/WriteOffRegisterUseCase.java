@@ -43,7 +43,10 @@ public class WriteOffRegisterUseCase {
                         .filter(stock -> stock.getMaterialList().stream()
                                 .anyMatch(material -> material.getMaterialsDetails().stream()
                                         .anyMatch(details ->
-                                                details.getBarCodes().contains(writeOffmaterial.getBarCode()))))
+                                                details.getBatchDetails().stream()
+                                                        .anyMatch(batchDetails ->
+                                                                batchDetails.getBarCodes().contains(
+                                                                        writeOffmaterial.getBarCode())))))
                         .findFirst()
                         .orElse(null);
 
@@ -51,15 +54,18 @@ public class WriteOffRegisterUseCase {
                     List<StockMaterialDomain> filteredMaterials = specificStock.getMaterialList().stream()
                             .filter(material -> material.getMaterialsDetails().stream()
                                     .anyMatch(details ->
-                                            details.getBarCodes().contains(writeOffmaterial.getBarCode())))
-                            .collect(Collectors.toList());
+                                            details.getBatchDetails().stream()
+                                                    .anyMatch(batchDetails ->
+                                                            batchDetails.getBarCodes().contains(
+                                                                    writeOffmaterial.getBarCode())))).toList();
 
                     specificStock.setMaterialList(filteredMaterials);
 
                     writeOffmaterial.setSupplier(specificStock.getSupplierName());
                     writeOffmaterial.setName(specificStock.getMaterialList().get(0).getMaterialName());
                     writeOffmaterial.
-                            setBatch(specificStock.getMaterialList().get(0).getMaterialsDetails().get(0).getBatch());
+                            setBatch(specificStock.getMaterialList().get(0)
+                                    .getMaterialsDetails().get(0).getBatchDetails().get(0).getBatch());
 
                     final DeleteMaterialStockDomain deleteMaterialStockDomain = DeleteMaterialStockDomain.builder()
                             .supplierName(specificStock.getSupplierName())

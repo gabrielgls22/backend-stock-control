@@ -11,10 +11,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MaterialDetailsEntity {
+public class BatchDetailsEntity {
 
-    private String length;
-    private String width;
-    private Integer quantity;
-    private List<BatchDetailsEntity> batchDetails;
+    private String batch;
+    private List<String> barCodes;
 }

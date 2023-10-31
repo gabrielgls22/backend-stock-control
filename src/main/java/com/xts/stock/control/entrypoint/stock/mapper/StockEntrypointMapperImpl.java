@@ -1,10 +1,7 @@
 package com.xts.stock.control.entrypoint.stock.mapper;
 
 import com.xts.stock.control.entrypoint.stock.dto.*;
-import com.xts.stock.control.usecase.stock.domain.DeleteMaterialStockDomain;
-import com.xts.stock.control.usecase.stock.domain.MaterialDetailsDomain;
-import com.xts.stock.control.usecase.stock.domain.StockDomain;
-import com.xts.stock.control.usecase.stock.domain.StockMaterialDomain;
+import com.xts.stock.control.usecase.stock.domain.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -72,15 +69,27 @@ public class StockEntrypointMapperImpl implements StockEntrypointMapper{
         final List<MaterialDetailsDomain> materialDetailsDomainList = new ArrayList<>();
 
         final MaterialDetailsDomain materialDetailsDomain = MaterialDetailsDomain.builder()
-                .batch(requestDto.getBatch())
                 .length(requestDto.getLength())
                 .width(requestDto.getWidth())
-                .barCodes(requestDto.getBarCodes())
+                .batchDetails(responseBatchDetailsDtoToDomain(requestDto))
                 .build();
 
         materialDetailsDomainList.add(materialDetailsDomain);
 
         return materialDetailsDomainList;
+    }
+
+    private List<BatchDetailsDomain> responseBatchDetailsDtoToDomain(final StockDto requestDto) {
+        final List<BatchDetailsDomain> batchDetailsDomainList = new ArrayList<>();
+
+        final BatchDetailsDomain batchDetailsDomain = BatchDetailsDomain.builder()
+                .batch(requestDto.getBatch())
+                .barCodes(requestDto.getBarCodes())
+                .build();
+
+        batchDetailsDomainList.add(batchDetailsDomain);
+
+        return batchDetailsDomainList;
     }
 
     private List<StockMaterialDto> responseMaterialListDomainToDto(final List<StockMaterialDomain> materialDomainList) {
@@ -104,11 +113,11 @@ public class StockEntrypointMapperImpl implements StockEntrypointMapper{
 
         materialDetailsDomain.forEach(materialDetails -> {
             final MaterialDetailsDto materialDetailsDto = MaterialDetailsDto.builder()
-                    .batch(materialDetails.getBatch())
+//                    .batch(materialDetails.getBatch())
                     .width(materialDetails.getWidth())
                     .length(materialDetails.getLength())
                     .quantity(materialDetails.getQuantity())
-                    .barCodes(materialDetails.getBarCodes())
+//                    .barCodes(materialDetails.getBarCodes())
                     .build();
 
             materialDetailsDtoList.add(materialDetailsDto);

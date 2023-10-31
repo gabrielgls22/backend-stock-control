@@ -1,14 +1,12 @@
 package com.xts.stock.control.dataprovider.stock.repository;
 
-import com.xts.stock.control.dataprovider.stock.entity.DeleteMaterialStockEntity;
-import com.xts.stock.control.dataprovider.stock.entity.MaterialDetailsEntity;
-import com.xts.stock.control.dataprovider.stock.entity.StockEntity;
-import com.xts.stock.control.dataprovider.stock.entity.StockMaterialEntity;
+import com.xts.stock.control.dataprovider.stock.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Repository
 @RequiredArgsConstructor
@@ -41,12 +39,25 @@ public class StockRepository {
 
                         filteredMaterial.getMaterialsDetails()
                                 .forEach(materialDetails -> {
-                                    materialDetails.getBarCodes().removeIf(barCode ->
-                                            requestEntity.getBarCode().equalsIgnoreCase(barCode));
+                                    final AtomicInteger quantity = new AtomicInteger();
 
-                                    materialDetails.setQuantity(materialDetails.getBarCodes().size());
+                                    List<BatchDetailsEntity> updatedBatchDetailsList = new ArrayList<>();
 
-                                    if (!materialDetails.getBarCodes().isEmpty()) {
+                                    materialDetails.getBatchDetails().forEach(batchDetailsEntity -> {
+                                        batchDetailsEntity.getBarCodes().removeIf(barCode ->
+                                                requestEntity.getBarCode().equalsIgnoreCase(barCode));
+
+                                        quantity.addAndGet(batchDetailsEntity.getBarCodes().size());
+
+                                        if (!batchDetailsEntity.getBarCodes().isEmpty()) {
+                                            updatedBatchDetailsList.add(batchDetailsEntity);
+                                        }
+                                    });
+
+                                    materialDetails.setQuantity(quantity.get());
+                                    materialDetails.setBatchDetails(updatedBatchDetailsList);
+
+                                    if (!materialDetails.getBatchDetails().isEmpty()) {
                                         updatedDetailsList.add(materialDetails);
                                     }
                                 });
@@ -72,14 +83,16 @@ public class StockRepository {
         }
     }
 
-    public void registerStock(StockEntity requestEntity) {
+    public void registerStock(final StockEntity requestEntity) {
         try {
             final String materialName = requestEntity.getMaterialList().get(0).getMaterialName();
 
             final String length = requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0).getLength();
             final String width = requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0).getWidth();
+            final String batch = requestEntity.getMaterialList().get(0)
+                    .getMaterialsDetails().get(0).getBatchDetails().get(0).getBatch();
             final List<String> barCodeList = requestEntity.getMaterialList().get(0)
-                    .getMaterialsDetails().get(0).getBarCodes();
+                    .getMaterialsDetails().get(0).getBatchDetails().get(0).getBarCodes();
 
             stockDbRepository.findById(requestEntity.getId()).ifPresentOrElse(responseEntity -> {
                          List<StockMaterialEntity> specificMaterialEntity = responseEntity.getMaterialList().stream()
@@ -95,15 +108,34 @@ public class StockRepository {
                                                 .toList();
 
                                 if (!specificMaterialDetails.isEmpty()) {
-                                    final Integer newQuantity = specificMaterialDetails.get(0).getQuantity() +
-                                            barCodeList.size() ;
+                                    List<BatchDetailsEntity> specificBatchDetails =
+                                            specificMaterialDetails.get(0).getBatchDetails().stream()
+                                            .filter(batchDetails -> batch.equals(batchDetails.getBatch()))
+                                            .toList();
 
-                                    barCodeList.forEach(barCode ->
-                                            specificMaterialDetails.get(0).getBarCodes().add(barCode));
+                                    final AtomicInteger newQuantity = new AtomicInteger(
+                                            specificMaterialDetails.get(0).getQuantity() );
 
-                                    specificMaterialDetails.get(0).setQuantity(newQuantity);
+                                    newQuantity.addAndGet(
+                                            requestEntity.getMaterialList().get(0).getMaterialsDetails()
+                                                    .get(0).getBatchDetails().get(0).getBarCodes().size());
 
-                                    stockDbRepository.save(responseEntity);
+                                    specificMaterialDetails.get(0).setQuantity(newQuantity.get());
+
+                                        if (!specificBatchDetails.isEmpty()) {
+
+                                            barCodeList.forEach(barCode ->
+                                                    specificBatchDetails.get(0).getBarCodes().add(barCode));
+
+                                            stockDbRepository.save(responseEntity);
+
+                                        } else {
+                                            specificMaterialDetails.get(0).getBatchDetails().add(
+                                                    requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0)
+                                                            .getBatchDetails().get(0));
+
+                                            stockDbRepository.save(responseEntity);
+                                        }
 
                                 } else {
                                     materialEntity.getMaterialsDetails().add(

@@ -1,5 +1,6 @@
 package com.xts.stock.control.usecase.stock.domain;
 
+import com.xts.stock.control.dataprovider.stock.entity.BatchDetailsEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,9 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 public class MaterialDetailsDomain {
 
-    private String batch;
     private String length;
     private String width;
     private Integer quantity;
-    private List<String> barCodes;
+    private List<BatchDetailsDomain> batchDetails;
 }
