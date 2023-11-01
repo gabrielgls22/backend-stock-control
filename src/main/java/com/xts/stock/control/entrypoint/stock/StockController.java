@@ -1,17 +1,21 @@
 package com.xts.stock.control.entrypoint.stock;
 
 import com.xts.stock.control.entrypoint.stock.dto.DeleteMaterialStockDto;
+import com.xts.stock.control.entrypoint.stock.dto.StockConsultResponseDto;
 import com.xts.stock.control.entrypoint.stock.dto.StockDto;
 import com.xts.stock.control.entrypoint.stock.dto.StockResponseDto;
 import com.xts.stock.control.entrypoint.stock.mapper.StockEntrypointMapper;
+import com.xts.stock.control.usecase.stock.ConsultMaterialStockUseCase;
 import com.xts.stock.control.usecase.stock.DeleteMaterialStockUseCase;
 import com.xts.stock.control.usecase.stock.GetAllStockUseCase;
 import com.xts.stock.control.usecase.stock.StockRegisterUseCase;
 import com.xts.stock.control.usecase.stock.domain.DeleteMaterialStockDomain;
+import com.xts.stock.control.usecase.stock.domain.StockConsultResponseDomain;
 import com.xts.stock.control.usecase.stock.domain.StockDomain;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +36,8 @@ public class StockController {
     private final GetAllStockUseCase getAllStockUseCase;
 
     private final DeleteMaterialStockUseCase deleteMaterialStockUseCase;
+
+    private final ConsultMaterialStockUseCase consultMaterialStockUseCase;
 
     @PostMapping("/register")
     @Operation(summary = "Register stock",
@@ -63,7 +69,7 @@ public class StockController {
 
         final List<StockDomain> responseDomain = getAllStockUseCase.execute();
 
-        return stockEntrypointMapper.getAllStockDomainToEntity(responseDomain);
+        return stockEntrypointMapper.getAllStockDomainToDto(responseDomain);
     }
 
     @PostMapping("/delete")
@@ -82,4 +88,22 @@ public class StockController {
 
         deleteMaterialStockUseCase.execute(requestDomain);
     }
+
+    @GetMapping("/consult/{barCode}")
+    @Operation(summary = "Get all stock",
+            description = "Should get all stock",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
+    public @NotNull @ResponseBody StockConsultResponseDto consultMaterialStock(
+            @NotBlank @PathVariable("barCode") final String barCode) {
+
+        final StockConsultResponseDomain responseDomain = consultMaterialStockUseCase.execute(barCode);
+
+        return stockEntrypointMapper.consultMaterialStockDomainToDto(responseDomain);
+    }
+
 }

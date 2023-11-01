@@ -24,7 +24,7 @@ public class StockEntrypointMapperImpl implements StockEntrypointMapper{
     }
 
     @Override
-    public List<StockResponseDto> getAllStockDomainToEntity(final List<StockDomain> responseDomain) {
+    public List<StockResponseDto> getAllStockDomainToDto(final List<StockDomain> responseDomain) {
         final List<StockResponseDto> stockResponseDtoList = new ArrayList<>();
 
         responseDomain.forEach(stockDomain -> {
@@ -51,6 +51,21 @@ public class StockEntrypointMapperImpl implements StockEntrypointMapper{
         }
 
         return deleteMaterialStockDomainBuilder.build();
+    }
+
+    @Override
+    public StockConsultResponseDto consultMaterialStockDomainToDto(final StockConsultResponseDomain responseDomain) {
+        final StockConsultResponseDto.StockConsultResponseDtoBuilder stockConsultResponseDtoBuilder =
+                StockConsultResponseDto.builder();
+
+        if(Objects.nonNull(responseDomain)) {
+            stockConsultResponseDtoBuilder.supplierName(responseDomain.getSupplierName());
+            stockConsultResponseDtoBuilder.materialName(responseDomain.getMaterialName());
+            stockConsultResponseDtoBuilder.width(responseDomain.getWidth());
+            stockConsultResponseDtoBuilder.length(responseDomain.getLength());
+        }
+
+        return stockConsultResponseDtoBuilder.build();
     }
 
     private List<StockMaterialDomain> responseMaterialListDomain(final StockDto requestDto) {
