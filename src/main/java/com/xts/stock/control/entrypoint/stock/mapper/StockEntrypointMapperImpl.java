@@ -5,6 +5,7 @@ import com.xts.stock.control.usecase.stock.domain.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -113,15 +114,15 @@ public class StockEntrypointMapperImpl implements StockEntrypointMapper{
 
         materialDetailsDomain.forEach(materialDetails -> {
             final MaterialDetailsDto materialDetailsDto = MaterialDetailsDto.builder()
-//                    .batch(materialDetails.getBatch())
                     .width(materialDetails.getWidth())
                     .length(materialDetails.getLength())
                     .quantity(materialDetails.getQuantity())
-//                    .barCodes(materialDetails.getBarCodes())
                     .build();
 
             materialDetailsDtoList.add(materialDetailsDto);
         });
+
+        materialDetailsDtoList.sort(Comparator.comparing(MaterialDetailsDto::getWidth));
 
         return materialDetailsDtoList;
     }
