@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Repository
@@ -29,59 +30,59 @@ public class StockRepository {
                     .orElseThrow(() -> new RuntimeException("Error trying to get stock in db for supplier: " +
                             requestEntity.getSupplierName()));
 
-            List<StockMaterialEntity> materialsToRemove = new ArrayList<>();
-
             stockEntity.getMaterialList().stream()
                     .filter(material -> requestEntity.getMaterialName().equalsIgnoreCase(material.getMaterialName()))
                     .forEach(filteredMaterial -> {
 
-                        List<MaterialDetailsEntity> updatedDetailsList = new ArrayList<>();
+                        filteredMaterial.getMaterialsDetails().removeIf(materialDetails -> {
+                            if (requestEntity.getWidth().equalsIgnoreCase(materialDetails.getWidth()) &&
+                                    requestEntity.getLength().equalsIgnoreCase(materialDetails.getLength())) {
 
-                        filteredMaterial.getMaterialsDetails()
-                                .forEach(materialDetails -> {
-                                    final AtomicInteger quantity = new AtomicInteger();
+                                final AtomicInteger quantity = new AtomicInteger();
+                                AtomicBoolean isAnExistingBarcode = new AtomicBoolean(false);
 
-                                    List<BatchDetailsEntity> updatedBatchDetailsList = new ArrayList<>();
-
-                                    materialDetails.getBatchDetails().forEach(batchDetailsEntity -> {
-                                        batchDetailsEntity.getBarCodes().removeIf(barCode ->
-                                                requestEntity.getBarCode().equalsIgnoreCase(barCode));
-
-                                        quantity.addAndGet(batchDetailsEntity.getBarCodes().size());
-
-                                        if (!batchDetailsEntity.getBarCodes().isEmpty()) {
-                                            updatedBatchDetailsList.add(batchDetailsEntity);
+                                materialDetails.getBatchDetails().forEach(batchDetailsEntity -> {
+                                    batchDetailsEntity.getBarCodes().forEach(barCode -> {
+                                        if (barCode.equalsIgnoreCase(requestEntity.getBarCode())) {
+                                            isAnExistingBarcode.set(true);
                                         }
                                     });
 
-                                    materialDetails.setQuantity(quantity.get());
-                                    materialDetails.setBatchDetails(updatedBatchDetailsList);
+                                    batchDetailsEntity.getBarCodes().removeIf(barCode ->
+                                            requestEntity.getBarCode().equalsIgnoreCase(barCode));
 
-                                    if (!materialDetails.getBatchDetails().isEmpty()) {
-                                        updatedDetailsList.add(materialDetails);
-                                    }
+                                    quantity.addAndGet(batchDetailsEntity.getBarCodes().size());
                                 });
 
-                        filteredMaterial.setMaterialsDetails(updatedDetailsList);
+                                if (!isAnExistingBarcode.get()) {
+                                    throw new RuntimeException("The following barcode doesn't exist in " +
+                                            "database: " + requestEntity.getBarCode());
+                                }
 
-                        if (filteredMaterial.getMaterialsDetails().isEmpty()) {
-                            materialsToRemove.add(filteredMaterial);
-                        }
+                                materialDetails.setQuantity(quantity.get());
+
+                                return materialDetails.getQuantity() == 0;
+                            }
+                            return false;
+                        });
+
+                        filteredMaterial.getMaterialsDetails().removeIf(
+                                materialDetails -> materialDetails.getQuantity() == 0);
                     });
 
-            stockEntity.getMaterialList().removeAll(materialsToRemove);
+            stockEntity.getMaterialList().removeIf(
+                    filteredMaterial -> filteredMaterial.getMaterialsDetails().isEmpty());
 
             if (stockEntity.getMaterialList().isEmpty()) {
                 stockDbRepository.deleteById(stockEntity.getId());
             } else {
                 stockDbRepository.save(stockEntity);
             }
-
-
         } catch (final RuntimeException e) {
             throw new RuntimeException("Error trying to delete stock in db, with log: " + e.getMessage());
         }
     }
+
 
     public void registerStock(final StockEntity requestEntity) {
         try {
@@ -95,6 +96,7 @@ public class StockRepository {
                     .getMaterialsDetails().get(0).getBatchDetails().get(0).getBarCodes();
 
             stockDbRepository.findById(requestEntity.getId()).ifPresentOrElse(responseEntity -> {
+
                          List<StockMaterialEntity> specificMaterialEntity = responseEntity.getMaterialList().stream()
                                 .filter(materialEntity -> materialName.equalsIgnoreCase(materialEntity.getMaterialName()))
                                 .toList();
@@ -124,8 +126,11 @@ public class StockRepository {
 
                                         if (!specificBatchDetails.isEmpty()) {
 
-                                            barCodeList.forEach(barCode ->
-                                                    specificBatchDetails.get(0).getBarCodes().add(barCode));
+                                            barCodeList.forEach(barCode -> {
+                                                validateExistingBarCode(barCode,
+                                                        specificBatchDetails.get(0).getBarCodes());
+                                                specificBatchDetails.get(0).getBarCodes().add(barCode);
+                                            });
 
                                             stockDbRepository.save(responseEntity);
 
@@ -158,5 +163,13 @@ public class StockRepository {
         } catch (final RuntimeException e) {
             throw new RuntimeException("Error trying to register stock in db, with log: " + e.getMessage());
         }
+    }
+
+    private void validateExistingBarCode(final String barCode, final List<String> barCodeResponseList) {
+        barCodeResponseList.forEach(barCodeResponse -> {
+            if (barCodeResponse.equalsIgnoreCase(barCode)) {
+                throw new RuntimeException("The following barcode already exist in database: " + barCode);
+            }
+        });
     }
 }

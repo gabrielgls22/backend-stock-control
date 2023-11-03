@@ -47,6 +47,8 @@ public class StockEntrypointMapperImpl implements StockEntrypointMapper{
         if (Objects.nonNull(requestDto)) {
             deleteMaterialStockDomainBuilder.supplierName(requestDto.getSupplierName());
             deleteMaterialStockDomainBuilder.materialName(requestDto.getMaterialName());
+            deleteMaterialStockDomainBuilder.width(requestDto.getWidth());
+            deleteMaterialStockDomainBuilder.length(requestDto.getLength());
             deleteMaterialStockDomainBuilder.barCode(requestDto.getBarCode());
         }
 

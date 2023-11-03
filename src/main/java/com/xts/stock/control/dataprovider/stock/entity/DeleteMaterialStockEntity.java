@@ -13,5 +13,7 @@ public class DeleteMaterialStockEntity {
 
     private String supplierName;
     private String materialName;
+    private String width;
+    private String length;
     private String barCode;
 }

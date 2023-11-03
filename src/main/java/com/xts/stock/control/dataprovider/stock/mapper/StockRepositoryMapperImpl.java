@@ -38,6 +38,8 @@ public class StockRepositoryMapperImpl implements StockRepositoryMapper{
         if (Objects.nonNull(requestDomain)) {
             deleteMaterialStockEntityBuilder.supplierName(requestDomain.getSupplierName());
             deleteMaterialStockEntityBuilder.materialName(requestDomain.getMaterialName());
+            deleteMaterialStockEntityBuilder.width(requestDomain.getWidth());
+            deleteMaterialStockEntityBuilder.length(requestDomain.getLength());
             deleteMaterialStockEntityBuilder.barCode(requestDomain.getBarCode());
         }
 
