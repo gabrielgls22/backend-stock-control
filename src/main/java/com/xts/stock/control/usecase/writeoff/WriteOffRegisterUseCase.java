@@ -25,15 +25,15 @@ public class WriteOffRegisterUseCase {
 
     private final DeleteMaterialStockUseCase deleteMaterialStockUseCase;
 
-    public void execute(WriteOffDomain requestDomain) {
+    public void execute(final WriteOffDomain requestDomain) {
 
         setMaterialsAttributes(requestDomain);
 
         writeOffGateway.registerWriteOff(requestDomain);
     }
 
-    private void setMaterialsAttributes(WriteOffDomain requestDomain) {
-        requestDomain.setWriteOffDate(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+    private void setMaterialsAttributes(final WriteOffDomain requestDomain) {
+        requestDomain.setWriteOffDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         requestDomain.getMaterials().forEach(writeOffmaterial -> {
             final List<StockDomain> allStock = getAllStockUseCase.execute();

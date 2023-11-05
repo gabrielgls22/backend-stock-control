@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,13 +42,28 @@ public class WriteOffRepository {
         }
     }
 
-    public List<WriteOffDetailsEntity> getAllWriteOffs(final String writeOffDate) {
-        try{
 
-            return writeOffDbRepository
-                    .findById(writeOffDate)
-                    .map(WriteOffEntity::getWriteOffList)
-                    .orElse(Collections.emptyList());
+    public List<WriteOffDetailsEntity> getAllWriteOffs(final String firstDay, final String lastDay) {
+        try {
+            final Query query = new Query();
+
+            final LocalDate firstDayFormated = LocalDate.parse(firstDay);
+            final LocalDate lastDayFormatedd = LocalDate.parse(lastDay).plusDays(1);
+
+            final Criteria dateCriteria = Criteria.where("id")
+                    .gte(firstDayFormated.format(DateTimeFormatter.ISO_DATE))
+                    .lt(lastDayFormatedd.format(DateTimeFormatter.ISO_DATE));
+
+            query.addCriteria(dateCriteria);
+
+            final List<WriteOffEntity> writeOffEntities = mongoTemplate.find(query, WriteOffEntity.class);
+
+            final List<WriteOffDetailsEntity> allWriteOffDays = new ArrayList<>();
+
+            writeOffEntities.forEach(writeOffEntity ->
+                    allWriteOffDays.addAll(writeOffEntity.getWriteOffList()));
+
+            return allWriteOffDays;
 
         } catch (final RuntimeException e) {
             throw new RuntimeException("Error trying to get day write-off in db, with log: " + e.getMessage());
@@ -62,7 +79,12 @@ public class WriteOffRepository {
             writeOffEntity.getWriteOffList().removeIf(writeOff ->
                     requestEntity.getWriteOffCode().equals(writeOff.getWriteOffCode()));
 
-            writeOffDbRepository.save(writeOffEntity);
+            if (writeOffEntity.getWriteOffList().isEmpty()) {
+                writeOffDbRepository.deleteById(requestEntity.getWriteOffDate());
+
+            } else {
+                writeOffDbRepository.save(writeOffEntity);
+            }
 
         } catch (final RuntimeException e) {
             throw new RuntimeException("Error trying to delete write-off in db, with log: " + e.getMessage());

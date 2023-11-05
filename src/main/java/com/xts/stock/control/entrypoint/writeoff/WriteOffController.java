@@ -52,7 +52,7 @@ public class WriteOffController {
         writeOffRegisterUseCase.execute(requestDomain);
     }
 
-    @GetMapping("/{writeOffDate}")
+    @GetMapping
     @Operation(summary = "Get all write offs",
             description = "Should get all writeOffs",
             responses = {
@@ -61,10 +61,11 @@ public class WriteOffController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public @ResponseBody List<@Valid WriteOffDayDto> registerNewWriteOff(
-            @PathVariable("writeOffDate") @NotBlank final String writeOffDate) {
+    public @ResponseBody @NotNull List<@Valid WriteOffDayDto> registerNewWriteOff(
+            @RequestParam("firstDay") @NotBlank final String firstDay,
+            @RequestParam("lastDay") @NotBlank final String lastDay) {
 
-        final List<WriteOffDomain> responseDomain = getDayWriteOffUseCase.execute(writeOffDate);
+        final List<WriteOffDomain> responseDomain = getDayWriteOffUseCase.execute(firstDay, lastDay);
 
         return writeOffEntrypointMapper.getAllWriteOffsDomainToDto(responseDomain);
     }

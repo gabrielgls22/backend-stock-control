@@ -1,5 +1,6 @@
 package com.xts.stock.control.entrypoint.writeoff.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,5 +30,5 @@ public class WriteOffDto {
     @NotBlank(message = "Write off description is required")
     private String description;
 
-    private List<WriteOffMaterialsDto> materials;
+    private List<@Valid WriteOffMaterialsDto> materials;
 }

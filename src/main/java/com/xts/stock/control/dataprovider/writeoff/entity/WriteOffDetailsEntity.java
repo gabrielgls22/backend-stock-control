@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class WriteOffDetailsEntity {
 
+    private String writeOffDate;
     private String writeOffCode;
     private String costumerCnpj;
     private String costumerName;

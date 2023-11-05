@@ -35,6 +35,7 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
 
         responseEntity.forEach(writeOffEntity -> {
             final WriteOffDomain writeOffDomain = WriteOffDomain.builder()
+                    .writeOffDate(writeOffEntity.getWriteOffDate())
                     .writeOffCode(writeOffEntity.getWriteOffCode())
                     .costumerCnpj(writeOffEntity.getCostumerCnpj())
                     .costumerName(writeOffEntity.getCostumerName())
@@ -67,6 +68,7 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
         final List<WriteOffDetailsEntity> writeOffDetailsEntityList = new ArrayList<>();
 
         final WriteOffDetailsEntity writeOffDetailsEntity = WriteOffDetailsEntity.builder()
+                .writeOffDate(requestDomain.getWriteOffDate())
                 .writeOffCode(requestDomain.getWriteOffCode())
                 .costumerCnpj(requestDomain.getCostumerCnpj())
                 .costumerName(requestDomain.getCostumerName())

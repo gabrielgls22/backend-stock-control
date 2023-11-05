@@ -10,6 +10,8 @@ import com.xts.stock.control.usecase.writeoff.domain.WriteOffMaterialsDomain;
 import com.xts.stock.control.utils.Utils;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,6 +42,7 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
 
         writeOffDomainList.forEach(writeOffDomain -> {
             final WriteOffDayDto writeOffDayDto = WriteOffDayDto.builder()
+                    .writeOffDate(formatDateToDayMonthYear(writeOffDomain.getWriteOffDate()))
                     .writeOffCode(writeOffDomain.getWriteOffCode())
                     .costumerCnpj(Utils.cnpjRegex(writeOffDomain.getCostumerCnpj()))
                     .costumerName(writeOffDomain.getCostumerName())
@@ -100,5 +103,11 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
         });
 
         return writeOffMaterialsDtoList;
+    }
+
+    private static String formatDateToDayMonthYear(final String date) {
+        final LocalDate formattedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        return formattedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 }

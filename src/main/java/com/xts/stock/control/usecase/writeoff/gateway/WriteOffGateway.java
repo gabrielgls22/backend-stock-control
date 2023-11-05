@@ -8,7 +8,7 @@ import java.util.List;
 public interface WriteOffGateway {
     void registerWriteOff(WriteOffDomain requestDomain);
 
-    List<WriteOffDomain> getAllWriteOffs(String writeOffDate);
+    List<WriteOffDomain> getAllWriteOffs(String firstDay, String lastDay);
 
     void deleteWriteOff(DeleteWriteOffDomain requestDomain);
 }

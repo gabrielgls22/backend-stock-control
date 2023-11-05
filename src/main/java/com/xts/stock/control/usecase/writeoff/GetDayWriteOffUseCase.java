@@ -13,9 +13,9 @@ public class GetDayWriteOffUseCase {
 
     private final WriteOffGateway writeOffGateway;
 
-    public List<WriteOffDomain> execute(final String writeOffDate) {
+    public List<WriteOffDomain> execute(final String firstDay, final String lastDay) {
 
-        return writeOffGateway.getAllWriteOffs(writeOffDate);
+        return writeOffGateway.getAllWriteOffs(firstDay, lastDay);
     }
 }
 
