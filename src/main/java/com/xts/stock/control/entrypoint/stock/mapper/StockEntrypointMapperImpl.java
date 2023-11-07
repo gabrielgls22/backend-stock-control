@@ -139,7 +139,9 @@ public class StockEntrypointMapperImpl implements StockEntrypointMapper{
             materialDetailsDtoList.add(materialDetailsDto);
         });
 
-        materialDetailsDtoList.sort(Comparator.comparing(MaterialDetailsDto::getWidth));
+        materialDetailsDtoList.sort(Comparator
+                .comparing((MaterialDetailsDto dto) -> Integer.parseInt(dto.getWidth()))
+                .thenComparing(dto -> Integer.parseInt(dto.getLength())));
 
         return materialDetailsDtoList;
     }

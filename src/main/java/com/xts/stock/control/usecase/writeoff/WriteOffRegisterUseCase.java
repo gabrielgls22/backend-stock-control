@@ -1,11 +1,14 @@
 package com.xts.stock.control.usecase.writeoff;
 
+import com.xts.stock.control.entrypoint.interceptor.exceptions.BarcodeDoesNotExistException;
+import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException;
 import com.xts.stock.control.usecase.stock.DeleteMaterialStockUseCase;
 import com.xts.stock.control.usecase.stock.GetAllStockUseCase;
 import com.xts.stock.control.usecase.stock.domain.DeleteMaterialStockDomain;
 import com.xts.stock.control.usecase.stock.domain.StockDomain;
 import com.xts.stock.control.usecase.stock.domain.StockMaterialDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
+import com.xts.stock.control.usecase.writeoff.domain.WriteOffMaterialsDomain;
 import com.xts.stock.control.usecase.writeoff.gateway.WriteOffGateway;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,10 +40,16 @@ public class WriteOffRegisterUseCase {
     private void setMaterialsAttributes(final WriteOffDomain requestDomain) {
         requestDomain.setWriteOffDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
-        requestDomain.getMaterials().forEach(writeOffmaterial -> {
-            final List<StockDomain> allStock = getAllStockUseCase.execute();
+        final List<StockDomain> allStock = getAllStockUseCase.execute();
 
-            if (allStock != null) {
+        if (Objects.isNull(allStock)) {
+            throw new StandardException("Erro ao buscar o estoque.");
+        }
+
+        validateIfMaterialExistInStock(requestDomain.getMaterials(), allStock);
+
+        requestDomain.getMaterials().forEach(writeOffmaterial -> {
+
                 StockDomain specificStock = allStock.stream()
                         .filter(stock -> stock.getMaterialList().stream()
                                 .anyMatch(material -> material.getMaterialsDetails().stream()
@@ -75,8 +86,25 @@ public class WriteOffRegisterUseCase {
 
                     deleteMaterialStockUseCase.execute(deleteMaterialStockDomain);
                 }
-            }
         });
+    }
+
+    private void validateIfMaterialExistInStock(final List<WriteOffMaterialsDomain> writeOffMaterials,
+                                                final List<StockDomain> allStock) {
+        allStock.forEach(stock ->
+                stock.getMaterialList().forEach(material ->
+                        material.getMaterialsDetails().forEach(materialDetails ->
+                                materialDetails.getBatchDetails().forEach(batch ->
+                                        writeOffMaterials.forEach(writeOffMaterial ->
+                                        {
+                                            if (!batch.getBarCodes().contains(writeOffMaterial.getBarCode())) {
+                                                throw new BarcodeDoesNotExistException("O código de barras " +
+                                                        writeOffMaterial.getBarCode() + " não " + "existe no estoque.");
+                                            }
+
+                                        })
+                                ))));
+
     }
 
 }

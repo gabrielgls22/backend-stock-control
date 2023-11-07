@@ -1,6 +1,7 @@
 package com.xts.stock.control.dataprovider.costumer.repository;
 
 import com.xts.stock.control.dataprovider.costumer.entity.*;
+import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +18,8 @@ public class CostumerRepository {
         try{
             costumerDbRepository.save(requestEntity);
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to save new costumer in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao salvar um novo cliente.");
         }
 
     }
@@ -27,15 +28,16 @@ public class CostumerRepository {
         try{
            return costumerDbRepository.findAll();
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to save new costumer in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao buscar todos os clientes.");
         }
     }
 
     public void updateCostumer(final CostumerUpdateRequestEntity requestEntity) {
         try {
             final CostumerEntity costumerEntityUpdated = costumerDbRepository.findById(requestEntity.getCnpj())
-                    .orElseThrow(() -> new RuntimeException("Error trying to get costumer in db, with log: "));
+                    .orElseThrow(() ->
+                            new StandardException("Erro ao buscar todos os clientes."));
 
             costumerEntityUpdated.setId(requestEntity.getNewCnpj());
             costumerEntityUpdated.setCostumerName(requestEntity.getNewCostumer());
@@ -43,14 +45,15 @@ public class CostumerRepository {
             costumerDbRepository.deleteById(requestEntity.getCnpj());
             costumerDbRepository.save(costumerEntityUpdated);
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to update costumer in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao atualizar o cliente.");
         }
     }
 
     public void updateTag(final TagUpdateRequestEntity requestEntity) {
         final CostumerEntity costumerTagUpdated = costumerDbRepository.findById(requestEntity.getCnpj())
-                .orElseThrow(() -> new RuntimeException("Error trying to get costumer in db, with log: "));
+                .orElseThrow(() ->
+                        new StandardException("Erro ao buscar todos os clientes."));
 
         costumerTagUpdated.getTagList().forEach(tag -> {
             if (requestEntity.getCode().equals(tag.getCode())) {
@@ -65,8 +68,8 @@ public class CostumerRepository {
         try {
             costumerDbRepository.deleteById(costumerCnpj);
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to delete costumer in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao atualizar a etiqueta.");
         }
     }
 
@@ -74,7 +77,8 @@ public class CostumerRepository {
         try {
             final CostumerEntity costumerEntity =
                     costumerDbRepository.findById(requestEntity.getCostumerCnpj())
-                    .orElseThrow(() -> new RuntimeException("Error trying to get costumer in db, with log: "));
+                    .orElseThrow(() ->
+                            new StandardException("Erro ao buscar todos os clientes."));
 
             costumerEntity.getTagList().removeIf(tag ->
                     requestEntity.getTagCode().equals(tag.getCode()));
@@ -82,7 +86,7 @@ public class CostumerRepository {
             costumerDbRepository.save(costumerEntity);
 
         } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to delete tag in db, with log: " + e.getMessage());
+            throw new StandardException("Erro ao deletar a etiqueta.");
         }
     }
 
@@ -90,7 +94,8 @@ public class CostumerRepository {
         try {
             final CostumerEntity costumerEntity =
                     costumerDbRepository.findById(tagAddRequestEntity.getCostumerCnpj())
-                            .orElseThrow(() -> new RuntimeException("Error trying to get costumer in db, with log: "));
+                            .orElseThrow(() ->
+                                    new StandardException("Erro ao buscar todos os clientes."));
 
             final TagEntity addTag = TagEntity.builder()
                     .code(tagAddRequestEntity.getCode())
@@ -102,7 +107,7 @@ public class CostumerRepository {
             costumerDbRepository.save(costumerEntity);
 
         } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to add tag to a costumer in db, with log: " + e.getMessage());
+            throw new StandardException("Erro ao adicionar nova etiqueta para o cliente solicitado.");
         }
     }
 }

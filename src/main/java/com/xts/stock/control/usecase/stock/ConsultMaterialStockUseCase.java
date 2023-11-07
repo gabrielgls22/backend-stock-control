@@ -1,5 +1,6 @@
 package com.xts.stock.control.usecase.stock;
 
+import com.xts.stock.control.entrypoint.interceptor.exceptions.BarcodeDoesNotExistException;
 import com.xts.stock.control.usecase.stock.domain.MaterialDetailsDomain;
 import com.xts.stock.control.usecase.stock.domain.StockConsultResponseDomain;
 import com.xts.stock.control.usecase.stock.domain.StockDomain;
@@ -40,7 +41,7 @@ public class ConsultMaterialStockUseCase {
         );
 
         if (Objects.isNull(stockConsultResponse.get())) {
-            throw new RuntimeException("barCode doesn't exist in db");
+            throw new BarcodeDoesNotExistException("O material informado não existe no estoque.");
         }
 
         return stockConsultResponse.get();

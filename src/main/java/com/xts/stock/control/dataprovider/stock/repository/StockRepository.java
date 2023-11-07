@@ -1,6 +1,9 @@
 package com.xts.stock.control.dataprovider.stock.repository;
 
 import com.xts.stock.control.dataprovider.stock.entity.*;
+import com.xts.stock.control.entrypoint.interceptor.exceptions.BarcodeAlreadyExistException;
+import com.xts.stock.control.entrypoint.interceptor.exceptions.BarcodeDoesNotExistException;
+import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -19,16 +22,15 @@ public class StockRepository {
         try{
             return stockDbRepository.findAll();
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to get all stock in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao buscar o estoque.");
         }
     }
 
     public void deleteMaterial(final DeleteMaterialStockEntity requestEntity) {
         try {
             final StockEntity stockEntity = stockDbRepository.findById(requestEntity.getSupplierName())
-                    .orElseThrow(() -> new RuntimeException("Error trying to get stock in db for supplier: " +
-                            requestEntity.getSupplierName()));
+                    .orElseThrow(() -> new StandardException("Erro ao buscar o estoque."));
 
             stockEntity.getMaterialList().stream()
                     .filter(material -> requestEntity.getMaterialName().equalsIgnoreCase(material.getMaterialName()))
@@ -55,8 +57,8 @@ public class StockRepository {
                                 });
 
                                 if (!isAnExistingBarcode.get()) {
-                                    throw new RuntimeException("The following barcode doesn't exist in " +
-                                            "database: " + requestEntity.getBarCode());
+                                    throw new BarcodeDoesNotExistException("O código de barras " +
+                                            requestEntity.getBarCode() + " não " + "existe no estoque.");
                                 }
 
                                 materialDetails.setQuantity(quantity.get());
@@ -78,8 +80,8 @@ public class StockRepository {
             } else {
                 stockDbRepository.save(stockEntity);
             }
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to delete stock in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao deletar o material do estoque.");
         }
     }
 
@@ -97,8 +99,11 @@ public class StockRepository {
 
             stockDbRepository.findById(requestEntity.getId()).ifPresentOrElse(responseEntity -> {
 
-                         List<StockMaterialEntity> specificMaterialEntity = responseEntity.getMaterialList().stream()
-                                .filter(materialEntity -> materialName.equalsIgnoreCase(materialEntity.getMaterialName()))
+                        validateExistingBarCode(barCodeList, responseEntity);
+
+                        List<StockMaterialEntity> specificMaterialEntity = responseEntity.getMaterialList().stream()
+                                .filter(materialEntity ->
+                                        materialName.equalsIgnoreCase(materialEntity.getMaterialName()))
                                 .toList();
 
                         if (!specificMaterialEntity.isEmpty()) {
@@ -112,11 +117,11 @@ public class StockRepository {
                                 if (!specificMaterialDetails.isEmpty()) {
                                     List<BatchDetailsEntity> specificBatchDetails =
                                             specificMaterialDetails.get(0).getBatchDetails().stream()
-                                            .filter(batchDetails -> batch.equals(batchDetails.getBatch()))
-                                            .toList();
+                                                    .filter(batchDetails -> batch.equals(batchDetails.getBatch()))
+                                                    .toList();
 
                                     final AtomicInteger newQuantity = new AtomicInteger(
-                                            specificMaterialDetails.get(0).getQuantity() );
+                                            specificMaterialDetails.get(0).getQuantity());
 
                                     newQuantity.addAndGet(
                                             requestEntity.getMaterialList().get(0).getMaterialsDetails()
@@ -124,23 +129,17 @@ public class StockRepository {
 
                                     specificMaterialDetails.get(0).setQuantity(newQuantity.get());
 
-                                        if (!specificBatchDetails.isEmpty()) {
+                                    if (!specificBatchDetails.isEmpty()) {
 
-                                            barCodeList.forEach(barCode -> {
-                                                validateExistingBarCode(barCode,
-                                                        specificBatchDetails.get(0).getBarCodes());
-                                                specificBatchDetails.get(0).getBarCodes().add(barCode);
-                                            });
+                                        stockDbRepository.save(responseEntity);
 
-                                            stockDbRepository.save(responseEntity);
+                                    } else {
+                                        specificMaterialDetails.get(0).getBatchDetails().add(
+                                                requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0)
+                                                        .getBatchDetails().get(0));
 
-                                        } else {
-                                            specificMaterialDetails.get(0).getBatchDetails().add(
-                                                    requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0)
-                                                            .getBatchDetails().get(0));
-
-                                            stockDbRepository.save(responseEntity);
-                                        }
+                                        stockDbRepository.save(responseEntity);
+                                    }
 
                                 } else {
                                     materialEntity.getMaterialsDetails().add(
@@ -160,16 +159,22 @@ public class StockRepository {
                     () -> stockDbRepository.save(requestEntity));
 
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to register stock in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao cadastrar material no estoque.");
         }
     }
 
-    private void validateExistingBarCode(final String barCode, final List<String> barCodeResponseList) {
-        barCodeResponseList.forEach(barCodeResponse -> {
-            if (barCodeResponse.equalsIgnoreCase(barCode)) {
-                throw new RuntimeException("The following barcode already exist in database: " + barCode);
-            }
-        });
+    private void validateExistingBarCode(final List<String> barCodeList, final StockEntity stockEntity) {
+        stockEntity.getMaterialList().forEach(material ->
+                material.getMaterialsDetails().forEach(materialDetails ->
+                        materialDetails.getBatchDetails().forEach(batch ->
+                                batch.getBarCodes().forEach(barCodeResponse -> {
+                                    barCodeList.forEach(barCode -> {
+                                        if (barCodeResponse.equalsIgnoreCase(barCode)) {
+                                            throw new BarcodeAlreadyExistException("O material com código de barras " +
+                                                    barCode + " já existe no estoque.");
+                                        }
+                                    });
+                                }))));
     }
 }

@@ -90,8 +90,8 @@ public class StockController {
     }
 
     @GetMapping("/consult/{barCode}")
-    @Operation(summary = "Get all stock",
-            description = "Should get all stock",
+    @Operation(summary = "Consult material in stock",
+            description = "Should consult material in stock",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Success"),
                     @ApiResponse(responseCode = "404", description = "Not found"),

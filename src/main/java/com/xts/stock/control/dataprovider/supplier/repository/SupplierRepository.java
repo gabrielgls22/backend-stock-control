@@ -1,6 +1,7 @@
 package com.xts.stock.control.dataprovider.supplier.repository;
 
 import com.xts.stock.control.dataprovider.supplier.entity.*;
+import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +18,8 @@ public class SupplierRepository {
         try{
             supplierDbRepository.save(requestEntity);
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to save new supplier in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao salvar fornecedor.");
         }
 
     }
@@ -27,15 +28,15 @@ public class SupplierRepository {
         try{
            return supplierDbRepository.findAll();
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to get all supplier in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao buscar fornecedores.");
         }
     }
 
     public void updateSupplier(final SupplierUpdateRequestEntity requestEntity) {
         try {
             final SupplierEntity supplierEntityUpdated = supplierDbRepository.findById(requestEntity.getCnpj())
-                    .orElseThrow(() -> new RuntimeException("Error trying to get supplier in db, with log: "));
+                    .orElseThrow(() -> new StandardException("Erro ao buscar fornecedores."));
 
             supplierEntityUpdated.setId(requestEntity.getNewCnpj());
             supplierEntityUpdated.setSupplierName(requestEntity.getNewSupplier());
@@ -43,14 +44,14 @@ public class SupplierRepository {
             supplierDbRepository.deleteById(requestEntity.getCnpj());
             supplierDbRepository.save(supplierEntityUpdated);
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to update supplier in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao atualizar fornecedor.");
         }
     }
 
     public void updateMaterial(final MaterialUpdateRequestEntity requestEntity) {
         final SupplierEntity supplierMaterialUpdated = supplierDbRepository.findById(requestEntity.getCnpj())
-                .orElseThrow(() -> new RuntimeException("Error trying to get supplier in db, with log: "));
+                .orElseThrow(() -> new StandardException("Erro ao buscar fornecedores."));
 
         supplierMaterialUpdated.getMaterialList().forEach(material -> {
             if (requestEntity.getCode().equals(material.getCode())) {
@@ -66,8 +67,8 @@ public class SupplierRepository {
         try {
             supplierDbRepository.deleteById(supplierCnpj);
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to delete supplier in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao deletar fornecedor.");
         }
     }
 
@@ -75,15 +76,15 @@ public class SupplierRepository {
         try {
             final SupplierEntity supplierEntity =
                     supplierDbRepository.findById(requestEntity.getSupplierCnpj())
-                    .orElseThrow(() -> new RuntimeException("Error trying to get supplier in db, with log: "));
+                    .orElseThrow(() -> new StandardException("Erro ao buscar fornecedores."));
 
             supplierEntity.getMaterialList().removeIf(material ->
                     requestEntity.getMaterialCode().equals(material.getCode()));
 
             supplierDbRepository.save(supplierEntity);
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to delete material in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao deletar o material do fornecedor.");
         }
     }
 
@@ -91,7 +92,7 @@ public class SupplierRepository {
         try {
             final SupplierEntity supplierEntity =
                     supplierDbRepository.findById(materialAddRequestEntity.getSupplierCnpj())
-                            .orElseThrow(() -> new RuntimeException("Error trying to get supplier in db, with log: "));
+                            .orElseThrow(() -> new StandardException("Erro ao buscar fornecedores."));
 
             final MaterialEntity addMaterial = MaterialEntity.builder()
                     .code(materialAddRequestEntity.getCode())
@@ -104,7 +105,7 @@ public class SupplierRepository {
             supplierDbRepository.save(supplierEntity);
 
         } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to add material to a supplier in db, with log: " + e.getMessage());
+            throw new StandardException("Erro ao adicionar o material ao fornecedor.");
         }
     }
 }

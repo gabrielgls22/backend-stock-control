@@ -3,6 +3,7 @@ package com.xts.stock.control.dataprovider.writeoff.repository;
 import com.xts.stock.control.dataprovider.writeoff.entity.DeleteWriteOffEntity;
 import com.xts.stock.control.dataprovider.writeoff.entity.WriteOffDetailsEntity;
 import com.xts.stock.control.dataprovider.writeoff.entity.WriteOffEntity;
+import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -37,8 +38,8 @@ public class WriteOffRepository {
 
                     }, () -> writeOffDbRepository.save(requestEntity));
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to save new write-off in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao salvar saída de etiqueta.");
         }
     }
 
@@ -65,16 +66,16 @@ public class WriteOffRepository {
 
             return allWriteOffDays;
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to get day write-off in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao buscar saídas de etiquetas nas datas fornecidas.");
         }
     }
 
     public void deleteWriteOff(final DeleteWriteOffEntity requestEntity) {
         try {
             final WriteOffEntity writeOffEntity = writeOffDbRepository.findById(requestEntity.getWriteOffDate())
-                    .orElseThrow(() -> new RuntimeException("Error trying to get write-off in db for date: " +
-                            requestEntity.getWriteOffDate()));
+                    .orElseThrow(() ->
+                            new StandardException("Erro ao buscar saídas de etiquetas nas datas fornecidas."));
 
             writeOffEntity.getWriteOffList().removeIf(writeOff ->
                     requestEntity.getWriteOffCode().equals(writeOff.getWriteOffCode()));
@@ -86,8 +87,8 @@ public class WriteOffRepository {
                 writeOffDbRepository.save(writeOffEntity);
             }
 
-        } catch (final RuntimeException e) {
-            throw new RuntimeException("Error trying to delete write-off in db, with log: " + e.getMessage());
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao deletar saída de etiqueta.");
         }
     }
 }
