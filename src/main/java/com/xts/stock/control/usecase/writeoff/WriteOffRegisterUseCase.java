@@ -98,8 +98,7 @@ public class WriteOffRegisterUseCase {
                                         writeOffMaterials.forEach(writeOffMaterial ->
                                         {
                                             if (!batch.getBarCodes().contains(writeOffMaterial.getBarCode())) {
-                                                throw new BarcodeDoesNotExistException("O código de barras " +
-                                                        writeOffMaterial.getBarCode() + " não " + "existe no estoque.");
+                                                throw new BarcodeDoesNotExistException(writeOffMaterial.getBarCode());
                                             }
 
                                         })

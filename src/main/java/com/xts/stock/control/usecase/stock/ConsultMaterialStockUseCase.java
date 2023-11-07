@@ -41,7 +41,7 @@ public class ConsultMaterialStockUseCase {
         );
 
         if (Objects.isNull(stockConsultResponse.get())) {
-            throw new BarcodeDoesNotExistException("O material informado não existe no estoque.");
+            throw new BarcodeDoesNotExistException(barCode);
         }
 
         return stockConsultResponse.get();

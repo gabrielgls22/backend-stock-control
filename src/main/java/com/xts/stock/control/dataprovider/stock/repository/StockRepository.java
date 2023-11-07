@@ -7,7 +7,6 @@ import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,8 +56,7 @@ public class StockRepository {
                                 });
 
                                 if (!isAnExistingBarcode.get()) {
-                                    throw new BarcodeDoesNotExistException("O código de barras " +
-                                            requestEntity.getBarCode() + " não " + "existe no estoque.");
+                                    throw new BarcodeDoesNotExistException(requestEntity.getBarCode());
                                 }
 
                                 materialDetails.setQuantity(quantity.get());
@@ -171,8 +169,7 @@ public class StockRepository {
                                 batch.getBarCodes().forEach(barCodeResponse -> {
                                     barCodeList.forEach(barCode -> {
                                         if (barCodeResponse.equalsIgnoreCase(barCode)) {
-                                            throw new BarcodeAlreadyExistException("O material com código de barras " +
-                                                    barCode + " já existe no estoque.");
+                                            throw new BarcodeAlreadyExistException(barCode);
                                         }
                                     });
                                 }))));
