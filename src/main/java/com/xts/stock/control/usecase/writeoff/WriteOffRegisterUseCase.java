@@ -4,9 +4,7 @@ import com.xts.stock.control.entrypoint.interceptor.exceptions.BarcodeDoesNotExi
 import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException;
 import com.xts.stock.control.usecase.stock.DeleteMaterialStockUseCase;
 import com.xts.stock.control.usecase.stock.GetAllStockUseCase;
-import com.xts.stock.control.usecase.stock.domain.DeleteMaterialStockDomain;
-import com.xts.stock.control.usecase.stock.domain.StockDomain;
-import com.xts.stock.control.usecase.stock.domain.StockMaterialDomain;
+import com.xts.stock.control.usecase.stock.domain.*;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffMaterialsDomain;
 import com.xts.stock.control.usecase.writeoff.gateway.WriteOffGateway;
@@ -48,7 +46,7 @@ public class WriteOffRegisterUseCase {
 
         validateIfMaterialExistInStock(requestDomain.getMaterials(), allStock);
 
-        requestDomain.getMaterials().forEach(writeOffmaterial -> {
+        requestDomain.getMaterials().forEach(writeOffMaterial -> {
 
                 StockDomain specificStock = allStock.stream()
                         .filter(stock -> stock.getMaterialList().stream()
@@ -57,7 +55,7 @@ public class WriteOffRegisterUseCase {
                                                 details.getBatchDetails().stream()
                                                         .anyMatch(batchDetails ->
                                                                 batchDetails.getBarCodes().contains(
-                                                                        writeOffmaterial.getBarCode())))))
+                                                                        writeOffMaterial.getBarCode())))))
                         .findFirst()
                         .orElse(null);
 
@@ -68,20 +66,39 @@ public class WriteOffRegisterUseCase {
                                             details.getBatchDetails().stream()
                                                     .anyMatch(batchDetails ->
                                                             batchDetails.getBarCodes().contains(
-                                                                    writeOffmaterial.getBarCode())))).toList();
+                                                                    writeOffMaterial.getBarCode())))).toList();
 
-                    specificStock.setMaterialList(filteredMaterials);
+                    List<MaterialDetailsDomain> filteredMaterialsDetails = specificStock.getMaterialList().stream()
+                            .flatMap(material -> material.getMaterialsDetails().stream()
+                                    .filter(materialDetails -> materialDetails.getBatchDetails().stream()
+                                            .anyMatch(batch -> batch.getBarCodes().stream()
+                                                    .anyMatch(barCode ->
+                                                            barCode.equalsIgnoreCase(
+                                                                    writeOffMaterial.getBarCode()))))).toList();
 
-                    writeOffmaterial.setSupplier(specificStock.getSupplierName());
-                    writeOffmaterial.setName(specificStock.getMaterialList().get(0).getMaterialName());
-                    writeOffmaterial.
-                            setBatch(specificStock.getMaterialList().get(0)
-                                    .getMaterialsDetails().get(0).getBatchDetails().get(0).getBatch());
+                    List<BatchDetailsDomain> specificBatchDetails = specificStock.getMaterialList().stream()
+                            .flatMap(material -> material.getMaterialsDetails().stream()
+                                    .flatMap(materialDetails -> materialDetails.getBatchDetails().stream()
+                                            .filter(batchDetails -> batchDetails.getBarCodes().stream()
+                                                    .anyMatch(barCode ->
+                                                            barCode.equalsIgnoreCase(writeOffMaterial.getBarCode()))
+                                            )
+                                    )
+                            )
+                            .toList();
+
+
+                    writeOffMaterial.setSupplier(specificStock.getSupplierName());
+                    writeOffMaterial.setName(specificStock.getMaterialList().get(0).getMaterialName());
+                    writeOffMaterial.
+                            setBatch(specificBatchDetails.get(0).getBatch());
 
                     final DeleteMaterialStockDomain deleteMaterialStockDomain = DeleteMaterialStockDomain.builder()
                             .supplierName(specificStock.getSupplierName())
-                            .materialName(specificStock.getMaterialList().get(0).getMaterialName())
-                            .barCode(writeOffmaterial.getBarCode())
+                            .materialName(filteredMaterials.get(0).getMaterialName())
+                            .width(filteredMaterialsDetails.get(0).getWidth())
+                            .length(filteredMaterialsDetails.get(0).getLength())
+                            .barCode(writeOffMaterial.getBarCode())
                             .build();
 
                     deleteMaterialStockUseCase.execute(deleteMaterialStockDomain);
@@ -91,18 +108,25 @@ public class WriteOffRegisterUseCase {
 
     private void validateIfMaterialExistInStock(final List<WriteOffMaterialsDomain> writeOffMaterials,
                                                 final List<StockDomain> allStock) {
-        allStock.forEach(stock ->
-                stock.getMaterialList().forEach(material ->
-                        material.getMaterialsDetails().forEach(materialDetails ->
-                                materialDetails.getBatchDetails().forEach(batch ->
-                                        writeOffMaterials.forEach(writeOffMaterial ->
-                                        {
-                                            if (!batch.getBarCodes().contains(writeOffMaterial.getBarCode())) {
-                                                throw new BarcodeDoesNotExistException(writeOffMaterial.getBarCode());
-                                            }
 
-                                        })
-                                ))));
+        final AtomicBoolean isAnExistingBarCode = new AtomicBoolean(false);
+
+        writeOffMaterials.forEach(writeOffMaterial -> {
+
+            allStock.forEach(stock ->
+                    stock.getMaterialList().forEach(material ->
+                            material.getMaterialsDetails().forEach(materialDetails ->
+                                    materialDetails.getBatchDetails().forEach(batch -> {
+                                                if (batch.getBarCodes().contains(writeOffMaterial.getBarCode())) {
+                                                    isAnExistingBarCode.set(true);
+                                                }
+                                            }
+                                    ))));
+
+            if (!isAnExistingBarCode.get()) {
+                throw new BarcodeDoesNotExistException(writeOffMaterial.getBarCode());
+            }
+        });
 
     }
 

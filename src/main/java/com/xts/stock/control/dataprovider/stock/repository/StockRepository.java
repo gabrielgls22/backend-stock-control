@@ -59,6 +59,9 @@ public class StockRepository {
                                     throw new BarcodeDoesNotExistException(requestEntity.getBarCode());
                                 }
 
+                                materialDetails.getBatchDetails().removeIf(batch ->
+                                        batch.getBarCodes().isEmpty());
+
                                 materialDetails.setQuantity(quantity.get());
 
                                 return materialDetails.getQuantity() == 0;
