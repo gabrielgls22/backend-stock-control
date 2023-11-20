@@ -15,8 +15,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -106,28 +104,21 @@ public class WriteOffRegisterUseCase {
         });
     }
 
-    private void validateIfMaterialExistInStock(final List<WriteOffMaterialsDomain> writeOffMaterials,
-                                                final List<StockDomain> allStock) {
-
-        final AtomicBoolean isAnExistingBarCode = new AtomicBoolean(false);
+    private void validateIfMaterialExistInStock(List<WriteOffMaterialsDomain> writeOffMaterials,
+                                                List<StockDomain> allStock) {
 
         writeOffMaterials.forEach(writeOffMaterial -> {
+            boolean isAnExistingBarCode = allStock.stream()
+                    .flatMap(stock -> stock.getMaterialList().stream())
+                    .flatMap(material -> material.getMaterialsDetails().stream())
+                    .flatMap(materialDetails -> materialDetails.getBatchDetails().stream())
+                    .anyMatch(batch -> batch.getBarCodes().contains(writeOffMaterial.getBarCode()));
 
-            allStock.forEach(stock ->
-                    stock.getMaterialList().forEach(material ->
-                            material.getMaterialsDetails().forEach(materialDetails ->
-                                    materialDetails.getBatchDetails().forEach(batch -> {
-                                                if (batch.getBarCodes().contains(writeOffMaterial.getBarCode())) {
-                                                    isAnExistingBarCode.set(true);
-                                                }
-                                            }
-                                    ))));
-
-            if (!isAnExistingBarCode.get()) {
+            if (!isAnExistingBarCode) {
                 throw new BarcodeDoesNotExistException(writeOffMaterial.getBarCode());
             }
         });
-
     }
+
 
 }

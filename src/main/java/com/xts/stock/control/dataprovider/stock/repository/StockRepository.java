@@ -95,12 +95,8 @@ public class StockRepository {
             final String width = requestEntity.getMaterialList().get(0).getMaterialsDetails().get(0).getWidth();
             final String batch = requestEntity.getMaterialList().get(0)
                     .getMaterialsDetails().get(0).getBatchDetails().get(0).getBatch();
-            final List<String> barCodeList = requestEntity.getMaterialList().get(0)
-                    .getMaterialsDetails().get(0).getBatchDetails().get(0).getBarCodes();
 
             stockDbRepository.findById(requestEntity.getId()).ifPresentOrElse(responseEntity -> {
-
-                        validateExistingBarCode(barCodeList, responseEntity);
 
                         List<StockMaterialEntity> specificMaterialEntity = responseEntity.getMaterialList().stream()
                                 .filter(materialEntity ->
@@ -163,18 +159,5 @@ public class StockRepository {
         } catch (final StandardException e) {
             throw new StandardException("Erro ao cadastrar material no estoque.");
         }
-    }
-
-    private void validateExistingBarCode(final List<String> barCodeList, final StockEntity stockEntity) {
-        stockEntity.getMaterialList().forEach(material ->
-                material.getMaterialsDetails().forEach(materialDetails ->
-                        materialDetails.getBatchDetails().forEach(batch ->
-                                batch.getBarCodes().forEach(barCodeResponse -> {
-                                    barCodeList.forEach(barCode -> {
-                                        if (barCodeResponse.equalsIgnoreCase(barCode)) {
-                                            throw new BarcodeAlreadyExistException(barCode);
-                                        }
-                                    });
-                                }))));
     }
 }

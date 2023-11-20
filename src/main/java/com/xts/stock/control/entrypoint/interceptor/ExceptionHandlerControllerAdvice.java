@@ -58,8 +58,8 @@ public class ExceptionHandlerControllerAdvice {
 
         final ErrorDto errorDto = ErrorDto.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
-                .message("O material com código de barras " +
-                        barcodeDoesNotExistException.getMessage() + " não existe no estoque." )
+                .message("O material com código de barras " + barcodeDoesNotExistException.getMessage() +
+                        " não existe no estoque. Nenhum material cadastrado." )
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
@@ -74,8 +74,8 @@ public class ExceptionHandlerControllerAdvice {
 
         final ErrorDto errorDto = ErrorDto.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
-                .message("O material com código de barras " +
-                        barcodeAlreadyExistException.getMessage() + " já existe no estoque." )
+                .message("O material com código de barras " + barcodeAlreadyExistException.getMessage() +
+                        " já existe no estoque. Nenhum material cadastrado." )
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
