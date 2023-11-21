@@ -1,6 +1,5 @@
 package com.xts.stock.control.usecase.stock.domain;
 
-import com.xts.stock.control.dataprovider.stock.entity.BatchDetailsEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

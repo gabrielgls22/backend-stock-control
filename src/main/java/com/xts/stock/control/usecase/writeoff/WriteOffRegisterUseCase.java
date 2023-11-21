@@ -1,6 +1,7 @@
 package com.xts.stock.control.usecase.writeoff;
 
 import com.xts.stock.control.entrypoint.interceptor.exceptions.BarcodeDoesNotExistException;
+import com.xts.stock.control.entrypoint.interceptor.exceptions.BarcodeDuplicityException;
 import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException;
 import com.xts.stock.control.usecase.stock.DeleteMaterialStockUseCase;
 import com.xts.stock.control.usecase.stock.GetAllStockUseCase;
@@ -13,8 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +35,8 @@ public class WriteOffRegisterUseCase {
 
     private void setMaterialsAttributes(final WriteOffDomain requestDomain) {
         requestDomain.setWriteOffDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+        validateBarCodeDuplicity(requestDomain.getMaterials());
 
         final List<StockDomain> allStock = getAllStockUseCase.execute();
 
@@ -87,7 +89,7 @@ public class WriteOffRegisterUseCase {
 
 
                     writeOffMaterial.setSupplier(specificStock.getSupplierName());
-                    writeOffMaterial.setName(specificStock.getMaterialList().get(0).getMaterialName());
+                    writeOffMaterial.setName(filteredMaterials.get(0).getMaterialName());
                     writeOffMaterial.
                             setBatch(specificBatchDetails.get(0).getBatch());
 
@@ -120,5 +122,17 @@ public class WriteOffRegisterUseCase {
         });
     }
 
+    private void validateBarCodeDuplicity(final List<WriteOffMaterialsDomain> writeOffMaterialsDomainList) {
+        final List<String> barCodeList = new ArrayList<>();
 
+        writeOffMaterialsDomainList.forEach(writeOffMaterial -> barCodeList.add(writeOffMaterial.getBarCode()));
+
+        Set<String> uniqueBarCodes = new HashSet<>();
+
+        barCodeList.forEach(barCode -> {
+            if (!uniqueBarCodes.add(barCode)) {
+                throw new BarcodeDuplicityException(barCode);
+            }
+        });
+    }
 }

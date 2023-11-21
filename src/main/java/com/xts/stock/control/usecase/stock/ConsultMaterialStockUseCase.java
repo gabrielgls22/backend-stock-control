@@ -1,5 +1,6 @@
 package com.xts.stock.control.usecase.stock;
 
+import com.xts.stock.control.entrypoint.interceptor.exceptions.BarcodeConsultException;
 import com.xts.stock.control.entrypoint.interceptor.exceptions.BarcodeDoesNotExistException;
 import com.xts.stock.control.usecase.stock.domain.MaterialDetailsDomain;
 import com.xts.stock.control.usecase.stock.domain.StockConsultResponseDomain;
@@ -41,7 +42,7 @@ public class ConsultMaterialStockUseCase {
         );
 
         if (Objects.isNull(stockConsultResponse.get())) {
-            throw new BarcodeDoesNotExistException(barCode);
+            throw new BarcodeConsultException(barCode);
         }
 
         return stockConsultResponse.get();

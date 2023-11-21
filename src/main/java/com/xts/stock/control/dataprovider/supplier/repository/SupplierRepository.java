@@ -2,6 +2,7 @@ package com.xts.stock.control.dataprovider.supplier.repository;
 
 import com.xts.stock.control.dataprovider.supplier.entity.*;
 import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException;
+import com.xts.stock.control.entrypoint.interceptor.exceptions.SupplierAlreadyExistException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +16,17 @@ public class SupplierRepository {
 
     public void createNewSupplier(final SupplierEntity requestEntity) {
 
-        try{
-            supplierDbRepository.save(requestEntity);
+        try {
+            supplierDbRepository.findById(requestEntity.getId()).ifPresentOrElse(supplier ->
+                    {
+                        throw new SupplierAlreadyExistException();
+                    },
+
+                    () -> supplierDbRepository.save(requestEntity));
 
         } catch (final StandardException e) {
             throw new StandardException("Erro ao salvar fornecedor.");
         }
-
     }
 
     public List<SupplierEntity> getAllSuppliers() {

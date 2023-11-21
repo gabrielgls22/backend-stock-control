@@ -1,6 +1,7 @@
 package com.xts.stock.control.dataprovider.costumer.repository;
 
 import com.xts.stock.control.dataprovider.costumer.entity.*;
+import com.xts.stock.control.entrypoint.interceptor.exceptions.CustomerAlreadyExistException;
 import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,13 +16,17 @@ public class CostumerRepository {
 
     public void createNewCostumer(final CostumerEntity requestEntity) {
 
-        try{
-            costumerDbRepository.save(requestEntity);
+        try {
+            costumerDbRepository.findById(requestEntity.getId()).ifPresentOrElse(costumer ->
+                    {
+                        throw new CustomerAlreadyExistException();
+                    },
+
+                    () -> costumerDbRepository.save(requestEntity));
 
         } catch (final StandardException e) {
             throw new StandardException("Erro ao salvar um novo cliente.");
         }
-
     }
 
     public List<CostumerEntity> getAllCostumers() {
