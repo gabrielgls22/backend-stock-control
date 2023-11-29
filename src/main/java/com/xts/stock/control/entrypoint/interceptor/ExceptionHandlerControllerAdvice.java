@@ -104,7 +104,7 @@ public class ExceptionHandlerControllerAdvice {
         final ErrorDto errorDto = ErrorDto.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
                 .message("O material com código de barras " + barcodeDuplicityException.getMessage() +
-                        " está sendo cadastrado de forma duplicada.")
+                        " está sendo cadastrado de forma duplicada. Nenhum material cadastrado.")
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
