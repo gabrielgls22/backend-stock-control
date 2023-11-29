@@ -13,8 +13,8 @@ public class CorsConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:3000",
-                        "https://dev-controlestoque.vercel.app",
-                        "https://controlestoque.vercel.app")
+                        "https://dev-topmaxestoque.vercel.app",
+                        "https://topmaxestoque.vercel.app")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*");
     }
