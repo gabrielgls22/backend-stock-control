@@ -35,8 +35,8 @@ public class WriteOffDayDto {
     @NotBlank(message = "Tag name is required")
     private String tagName;
 
-    @NotBlank(message = "Materials are required")
-    private String description;
+    @NotBlank(message = "serviceOrder are required")
+    private String serviceOrder;
 
     @NotNull(message = "Material information")
     private List<@Valid WriteOffMaterialsDto> materials;

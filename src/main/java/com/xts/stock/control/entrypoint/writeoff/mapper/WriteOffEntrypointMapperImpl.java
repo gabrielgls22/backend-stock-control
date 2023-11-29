@@ -29,7 +29,7 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
             writeOffDomainBuilder.costumerName(requestDto.getCostumerName().trim());
             writeOffDomainBuilder.tagCode(requestDto.getTagCode().trim());
             writeOffDomainBuilder.tagName(requestDto.getTagName().trim());
-            writeOffDomainBuilder.description(requestDto.getDescription().trim());
+            writeOffDomainBuilder.serviceOrder(requestDto.getServiceOrder().trim());
             writeOffDomainBuilder.materials(responseTagListDtoToDomain(requestDto.getMaterials()));
         }
 
@@ -48,7 +48,7 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
                     .costumerName(writeOffDomain.getCostumerName())
                     .tagCode(writeOffDomain.getTagCode())
                     .tagName(writeOffDomain.getTagName())
-                    .description(writeOffDomain.getDescription())
+                    .serviceOrder(writeOffDomain.getServiceOrder())
                     .materials(responseWriteOffMaterialsDomainToDto(writeOffDomain.getMaterials()))
                     .build();
 
@@ -78,6 +78,7 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
         writeOffDtoList.forEach(writeOffDto -> {
             final WriteOffMaterialsDomain writeOffDomain = WriteOffMaterialsDomain.builder()
                     .barCode(writeOffDto.getBarCode().trim())
+                    .lengthUsed(writeOffDto.getLengthUsed().trim())
                     .build();
 
             writeOffMaterialsDomainList.add(writeOffDomain);
@@ -94,6 +95,7 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
         materialsDomainList.forEach(materialDomain -> {
             final WriteOffMaterialsDto materialsDto = WriteOffMaterialsDto.builder()
                     .barCode(materialDomain.getBarCode())
+                    .lengthUsed(materialDomain.getLengthUsed())
                     .name(materialDomain.getName())
                     .supplier(materialDomain.getSupplier())
                     .batch(materialDomain.getBatch())

@@ -16,6 +16,9 @@ public class WriteOffMaterialsDto {
     @NotBlank(message = "Barcode is required")
     private String barCode;
 
+    @NotBlank(message = "lengthUsed is required")
+    private String lengthUsed;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String name;
 

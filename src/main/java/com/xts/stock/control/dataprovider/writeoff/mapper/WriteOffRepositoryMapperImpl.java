@@ -41,7 +41,7 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
                     .costumerName(writeOffEntity.getCostumerName())
                     .tagCode(writeOffEntity.getTagCode())
                     .tagName(writeOffEntity.getTagName())
-                    .description(writeOffEntity.getDescription())
+                    .serviceOrder(writeOffEntity.getServiceOrder())
                     .materials(responseWriteOffMaterialsEntityToDomain(writeOffEntity.getMaterials()))
                     .build();
 
@@ -74,7 +74,7 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
                 .costumerName(requestDomain.getCostumerName())
                 .tagCode(requestDomain.getTagCode())
                 .tagName(requestDomain.getTagName())
-                .description(requestDomain.getDescription())
+                .serviceOrder(requestDomain.getServiceOrder())
                 .materials(returnMaterialsDomainToEntity(requestDomain.getMaterials()))
                 .build();
 
@@ -90,6 +90,7 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
         materialsDomainList.forEach(material -> {
             final WriteOffMaterialEntity materialEntity = WriteOffMaterialEntity.builder()
                     .barCode(material.getBarCode())
+                    .lengthUsed(material.getLengthUsed())
                     .name(material.getName())
                     .supplier(material.getSupplier())
                     .batch(material.getBatch())
@@ -108,6 +109,7 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
         writeOffMaterialEntityList.forEach(materialEntity -> {
             final WriteOffMaterialsDomain materialsDomain = WriteOffMaterialsDomain.builder()
                     .barCode(materialEntity.getBarCode())
+                    .lengthUsed(materialEntity.getLengthUsed())
                     .name(materialEntity.getName())
                     .supplier(materialEntity.getSupplier())
                     .batch(materialEntity.getBatch())

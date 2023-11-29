@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class WriteOffMaterialEntity {
 
     private String barCode;
+    private String lengthUsed;
     private String name;
     private String supplier;
     private String batch;

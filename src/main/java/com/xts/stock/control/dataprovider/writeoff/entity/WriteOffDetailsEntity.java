@@ -19,7 +19,7 @@ public class WriteOffDetailsEntity {
     private String costumerName;
     private String tagCode;
     private String tagName;
-    private String description;
+    private String serviceOrder;
     private List<WriteOffMaterialEntity> materials;
 
 }
