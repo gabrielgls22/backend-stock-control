@@ -93,6 +93,8 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
                     .lengthUsed(material.getLengthUsed())
                     .name(material.getName())
                     .supplier(material.getSupplier())
+                    .width(material.getWidth())
+                    .length(material.getLength())
                     .batch(material.getBatch())
                     .build();
 
@@ -112,6 +114,8 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
                     .lengthUsed(materialEntity.getLengthUsed())
                     .name(materialEntity.getName())
                     .supplier(materialEntity.getSupplier())
+                    .width(materialEntity.getWidth())
+                    .length(materialEntity.getLength())
                     .batch(materialEntity.getBatch())
                     .build();
 

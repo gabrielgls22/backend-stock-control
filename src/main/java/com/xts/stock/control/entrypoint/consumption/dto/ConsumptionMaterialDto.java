@@ -1,4 +1,4 @@
-package com.xts.stock.control.dataprovider.writeoff.entity;
+package com.xts.stock.control.entrypoint.consumption.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,13 +9,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WriteOffMaterialEntity {
+public class ConsumptionMaterialDto {
 
-    private String barCode;
-    private String lengthUsed;
     private String name;
-    private String supplier;
+    private Integer lengthUsed;
+    private Integer removedFromStock;
     private String width;
     private String length;
-    private String batch;
+    private String widthAndLength;
 }

@@ -90,6 +90,8 @@ public class WriteOffRegisterUseCase {
 
                     writeOffMaterial.setSupplier(specificStock.getSupplierName());
                     writeOffMaterial.setName(filteredMaterials.get(0).getMaterialName());
+                    writeOffMaterial.setLength(filteredMaterialsDetails.get(0).getLength());
+                    writeOffMaterial.setWidth(filteredMaterialsDetails.get(0).getLength());
                     writeOffMaterial.
                             setBatch(specificBatchDetails.get(0).getBatch());
 
