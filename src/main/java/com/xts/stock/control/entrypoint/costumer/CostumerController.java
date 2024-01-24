@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,7 +64,7 @@ public class CostumerController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public @ResponseBody List<@Valid CostumerDto> registerNewCostumer() {
+    public @ResponseBody List<CostumerDto> registerNewCostumer() {
 
         final List<CostumerDomain> responseDomain = getAllCostumersUseCase.execute();
 
@@ -98,7 +97,8 @@ public class CostumerController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public void updateTagInformation(@RequestBody @Valid @NotNull final TagUpdateRequestDto requestDto) {
+    public void updateTagInformation(
+            @RequestBody @Valid @NotNull final TagUpdateRequestDto requestDto) {
 
         final TagUpdateRequestDomain requestDomain =
                 costumerEntrypointMapper.updateTagRequestDtoToDomain(requestDto);
@@ -129,12 +129,14 @@ public class CostumerController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public void deleteTag(@RequestBody @Valid @NotNull final TagDeleteRequestDto requestDto) {
+    public @ResponseBody List<CostumerDto> deleteTag(@RequestBody @Valid @NotNull final TagDeleteRequestDto requestDto) {
 
         final TagDeleteRequestDomain requestDomain =
                 costumerEntrypointMapper.deleteTagRequestDtoToDomain(requestDto);
 
-        tagDeleteUseCase.execute(requestDomain);
+        final List<CostumerDomain> responseDomain = tagDeleteUseCase.execute(requestDomain);
+
+        return costumerEntrypointMapper.getAllCostumersDomainToDto(responseDomain);
     }
 
     @PostMapping("/add-tag")
@@ -146,11 +148,13 @@ public class CostumerController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public void addTag(@RequestBody @Valid @NotNull final TagAddRequestDto requestDto) {
+    public @ResponseBody List<CostumerDto> addTag(@RequestBody @Valid @NotNull final TagAddRequestDto requestDto) {
 
         final TagAddRequestDomain requestDomain =
                 costumerEntrypointMapper.addTagRequestDtoToDomain(requestDto);
 
-        tagAddUseCase.execute(requestDomain);
+        final List<CostumerDomain> responseDomain = tagAddUseCase.execute(requestDomain);
+
+        return costumerEntrypointMapper.getAllCostumersDomainToDto(responseDomain);
     }
 }

@@ -1,7 +1,6 @@
 package com.xts.stock.control.dataprovider.stock.repository;
 
 import com.xts.stock.control.dataprovider.stock.entity.*;
-import com.xts.stock.control.entrypoint.interceptor.exceptions.BarcodeAlreadyExistException;
 import com.xts.stock.control.entrypoint.interceptor.exceptions.BarcodeDoesNotExistException;
 import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException;
 import lombok.RequiredArgsConstructor;

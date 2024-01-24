@@ -35,11 +35,11 @@ public class GetConsumptionUseCase {
                                             int totalLengthUsed = materialsList.stream()
                                                     .mapToInt(material -> Integer.parseInt(material.getLengthUsed()))
                                                     .sum();
-                                            int totalremovedFromStock = materialsList.size();
+                                            int totalRemovedFromStock = materialsList.size();
                                             return ConsumptionMaterialDomain.builder()
                                                     .name(firstMaterial.getName())
                                                     .lengthUsed(totalLengthUsed)
-                                                    .removedFromStock(totalremovedFromStock)
+                                                    .removedFromStock(totalRemovedFromStock)
                                                     .width(firstMaterial.getWidth())
                                                     .length(firstMaterial.getLength())
                                                     .build();

@@ -2,6 +2,7 @@ package com.xts.stock.control.entrypoint.interceptor;
 
 import com.xts.stock.control.entrypoint.interceptor.dto.ErrorDto;
 import com.xts.stock.control.entrypoint.interceptor.exceptions.*;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,22 +58,7 @@ public class ExceptionHandlerControllerAdvice {
         final ErrorDto errorDto = ErrorDto.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
                 .message("O material com código de barras " + barcodeDoesNotExistException.getMessage() +
-                        " não existe no estoque. Nenhum material cadastrado." )
-                .build();
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
-    }
-
-    @ExceptionHandler(BarcodeConsultException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public @ResponseBody ResponseEntity<ErrorDto> handleBarcodeConsultException(
-            final BarcodeConsultException barcodeConsultException) {
-
-        log.debug(barcodeConsultException.getMessage());
-
-        final ErrorDto errorDto = ErrorDto.builder()
-                .status(HttpStatus.BAD_REQUEST.value())
-                .message(barcodeConsultException.getMessage())
+                        " não existe no estoque.")
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
@@ -110,48 +96,39 @@ public class ExceptionHandlerControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
     }
 
-    @ExceptionHandler(SupplierAlreadyExistException.class)
+    @ExceptionHandler({
+            BarcodeConsultException.class,
+            SupplierAlreadyExistException.class,
+            TagAlreadyExistException.class,
+            UsernameAlreadyExistException.class,
+            CustomerAlreadyExistException.class
+    })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public @ResponseBody ResponseEntity<ErrorDto> handleSupplierAlreadyExistException(
-            final SupplierAlreadyExistException supplierAlreadyExistException) {
+    public @ResponseBody ResponseEntity<ErrorDto> handleStandardBadRequestException(
+            final RuntimeException standardBadRequestException) {
 
-        log.debug(supplierAlreadyExistException.getMessage());
+        log.debug(standardBadRequestException.getMessage());
 
         final ErrorDto errorDto = ErrorDto.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
-                .message(supplierAlreadyExistException.getMessage())
+                .message(standardBadRequestException.getMessage())
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
     }
 
-    @ExceptionHandler(CustomerAlreadyExistException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public @ResponseBody ResponseEntity<ErrorDto> handleCustomerAlreadyExistException(
-            final CustomerAlreadyExistException customerAlreadyExistException) {
+    @ExceptionHandler(LoginDetailsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public @ResponseBody ResponseEntity<ErrorDto> handleLoginDetailsException(
+            final LoginDetailsException loginDetailsException) {
 
-        log.debug(customerAlreadyExistException.getMessage());
-
-        final ErrorDto errorDto = ErrorDto.builder()
-                .status(HttpStatus.BAD_REQUEST.value())
-                .message(customerAlreadyExistException.getMessage())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
-    }
-
-    @ExceptionHandler(TagAlreadyExistException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public @ResponseBody ResponseEntity<ErrorDto> handleTagAlreadyExistException(
-            final TagAlreadyExistException tagAlreadyExistException) {
-
-        log.debug(tagAlreadyExistException.getMessage());
+        log.debug(loginDetailsException.getMessage());
 
         final ErrorDto errorDto = ErrorDto.builder()
-                .status(HttpStatus.BAD_REQUEST.value())
-                .message(tagAlreadyExistException.getMessage())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .message(loginDetailsException.getMessage())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDto);
     }
 }

@@ -2,7 +2,6 @@ package com.xts.stock.control.entrypoint.costumer.mapper;
 
 import com.xts.stock.control.entrypoint.costumer.dto.*;
 import com.xts.stock.control.usecase.costumer.domain.*;
-import com.xts.stock.control.usecase.supplier.domain.*;
 
 import java.util.List;
 

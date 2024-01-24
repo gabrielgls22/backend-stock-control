@@ -64,7 +64,7 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public @ResponseBody List<@Valid SupplierDto> getAllSuppliers() {
+    public @ResponseBody List<SupplierDto> getAllSuppliers() {
 
         final List<SupplierDomain> responseDomain = getAllSuppliersUseCase.execute();
 
@@ -128,12 +128,15 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public void deleteMaterial(@RequestBody @NotNull @Valid final MaterialDeleteRequestDto requestDto) {
+    public @ResponseBody List<SupplierDto> deleteMaterial(
+            @RequestBody @NotNull @Valid final MaterialDeleteRequestDto requestDto) {
 
         final MaterialDeleteRequestDomain requestDomain =
                 supplierEntrypointMapper.deleteMaterialRequestDtoToDomain(requestDto);
 
-        materialDeleteUseCase.execute(requestDomain);
+        final List<SupplierDomain> responseDomain = materialDeleteUseCase.execute(requestDomain);
+
+        return supplierEntrypointMapper.getAllSuppliersDomainToDto(responseDomain);
     }
 
     @PostMapping("/add-material")
@@ -145,11 +148,14 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public void addMaterial(@RequestBody @NotNull @Valid final MaterialAddRequestDto requestDto) {
+    public @ResponseBody List<SupplierDto> addMaterial(
+            @RequestBody @NotNull @Valid final MaterialAddRequestDto requestDto) {
 
         final MaterialAddRequestDomain requestDomain =
                 supplierEntrypointMapper.addMaterialRequestDtoToDomain(requestDto);
 
-        materialAddUseCase.execute(requestDomain);
+        final List<SupplierDomain> responseDomain = materialAddUseCase.execute(requestDomain);
+
+        return supplierEntrypointMapper.getAllSuppliersDomainToDto(responseDomain);
     }
 }

@@ -65,7 +65,7 @@ public class StockController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public @NotNull @ResponseBody List<@Valid StockResponseDto> getAllStock() {
+    public @ResponseBody List<StockResponseDto> getAllStock() {
 
         final List<StockDomain> responseDomain = getAllStockUseCase.execute();
 
@@ -81,12 +81,15 @@ public class StockController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public void deleteMaterialStock(@RequestBody @Valid @NotNull final DeleteMaterialStockDto requestDto) {
+    public @ResponseBody List<StockResponseDto> deleteMaterialStock(
+            @RequestBody @Valid @NotNull final DeleteMaterialStockDto requestDto) {
 
         final DeleteMaterialStockDomain requestDomain =
                 stockEntrypointMapper.deleteMaterialStockDtoToDomain(requestDto);
 
-        deleteMaterialStockUseCase.execute(requestDomain);
+        final List<StockDomain> responseDomain = deleteMaterialStockUseCase.execute(requestDomain);
+
+        return stockEntrypointMapper.getAllStockDomainToDto(responseDomain);
     }
 
     @GetMapping("/consult/{barCode}")
