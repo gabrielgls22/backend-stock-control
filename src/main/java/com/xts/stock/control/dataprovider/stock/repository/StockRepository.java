@@ -119,14 +119,16 @@ public class StockRepository {
                                     final AtomicInteger newQuantity = new AtomicInteger(
                                             specificMaterialDetails.get(0).getQuantity());
 
-                                    newQuantity.addAndGet(
-                                            requestEntity.getMaterialList().get(0).getMaterialsDetails()
-                                                    .get(0).getBatchDetails().get(0).getBarCodes().size());
+                                    final List<String> barCodesList = requestEntity.getMaterialList().get(0)
+                                            .getMaterialsDetails().get(0).getBatchDetails().get(0).getBarCodes();
+
+                                    newQuantity.addAndGet(barCodesList.size());
 
                                     specificMaterialDetails.get(0).setQuantity(newQuantity.get());
 
                                     if (!specificBatchDetails.isEmpty()) {
 
+                                        specificBatchDetails.get(0).getBarCodes().addAll(barCodesList);
                                         stockDbRepository.save(responseEntity);
 
                                     } else {
