@@ -97,12 +97,15 @@ public class SupplierController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public void updateMaterialInformation(@RequestBody @Valid final MaterialUpdateRequestDto requestDto) {
+    public @ResponseBody List<SupplierDto> updateMaterialInformation(
+            @RequestBody @Valid final MaterialUpdateRequestDto requestDto) {
 
         final MaterialUpdateRequestDomain requestDomain =
                 supplierEntrypointMapper.updateMaterialRequestDtoToDomain(requestDto);
 
-        materialUpdateUseCase.execute(requestDomain);
+        final List<SupplierDomain> responseDomain = materialUpdateUseCase.execute(requestDomain);
+
+        return  supplierEntrypointMapper.getAllSuppliersDomainToDto(responseDomain);
     }
 
     @DeleteMapping("/{supplierCnpj}")

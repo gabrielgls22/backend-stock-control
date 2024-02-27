@@ -8,6 +8,7 @@ import com.xts.stock.control.usecase.supplier.gateway.SupplierGateway;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -32,7 +33,12 @@ public class SupplierDataProvider implements SupplierGateway {
     public List<SupplierDomain> getAllSuppliers() {
         final List<SupplierEntity> responseEntity = supplierRepository.getAllSuppliers();
 
-        return supplierRepositoryMapper.getAllSuppliersEntityToDomain(responseEntity);
+        final List<SupplierDomain> allSuppliersDomain =
+                supplierRepositoryMapper.getAllSuppliersEntityToDomain(responseEntity);
+
+        allSuppliersDomain.sort(Comparator.comparing(SupplierDomain::getSupplierName));
+
+        return allSuppliersDomain;
 
     }
 

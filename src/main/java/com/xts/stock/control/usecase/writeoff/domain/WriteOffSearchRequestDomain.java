@@ -1,4 +1,4 @@
-package com.xts.stock.control.entrypoint.writeoff.dto;
+package com.xts.stock.control.usecase.writeoff.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
@@ -11,20 +11,23 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WriteOffMaterialsDto {
-
-    @NotBlank(message = "Barcode is required")
-    private String barCode;
+public class WriteOffSearchRequestDomain {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String lengthUsed;
+    private String costumerCnpj;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String name;
+    private String costumerName;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String supplier;
+    private String tagCode;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String batch;
+    private String tagName;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String material;
+
+    private String firstDay;
+    private String lastDay;
 }

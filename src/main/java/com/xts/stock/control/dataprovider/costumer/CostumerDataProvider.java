@@ -8,6 +8,7 @@ import com.xts.stock.control.usecase.costumer.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -32,7 +33,12 @@ public class CostumerDataProvider implements CostumerGateway {
     public List<CostumerDomain> getAllCostumers() {
         final List<CostumerEntity> responseEntity = costumerRepository.getAllCostumers();
 
-        return costumerRepositoryMapper.getAllCostumersEntityToDomain(responseEntity);
+        final List<CostumerDomain> allCostumersDomain =
+                costumerRepositoryMapper.getAllCostumersEntityToDomain(responseEntity);
+
+        allCostumersDomain.sort(Comparator.comparing(CostumerDomain::getCostumerName));
+
+        return allCostumersDomain;
 
     }
 

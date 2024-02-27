@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
@@ -62,6 +63,23 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
         }
 
         return deleteWriteOffEntityBuilder.build();
+    }
+
+    @Override
+    public WriteOffDomain writeOffByServiceOrderEntityToDomain(final WriteOffDetailsEntity responseEntity) {
+
+        return Optional.ofNullable(responseEntity)
+                .map(writeOffEntity -> WriteOffDomain.builder()
+                        .writeOffDate(writeOffEntity.getWriteOffDate())
+                        .writeOffCode(writeOffEntity.getWriteOffCode())
+                        .costumerCnpj(writeOffEntity.getCostumerCnpj())
+                        .costumerName(writeOffEntity.getCostumerName())
+                        .tagCode(writeOffEntity.getTagCode())
+                        .tagName(writeOffEntity.getTagName())
+                        .serviceOrder(writeOffEntity.getServiceOrder())
+                        .materials(responseWriteOffMaterialsEntityToDomain(writeOffEntity.getMaterials()))
+                        .build()
+                ).orElse(null);
     }
 
     protected List<WriteOffDetailsEntity> returnWriteOffListDomainToEntity(final WriteOffDomain requestDomain) {

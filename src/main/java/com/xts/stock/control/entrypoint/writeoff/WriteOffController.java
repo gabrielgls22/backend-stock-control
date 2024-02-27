@@ -1,18 +1,19 @@
 package com.xts.stock.control.entrypoint.writeoff;
 
 import com.xts.stock.control.entrypoint.writeoff.dto.DeleteWriteOffDto;
-import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffDayDto;
+import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffSearchResponseDto;
 import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffDto;
+import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffSearchRequestDto;
 import com.xts.stock.control.entrypoint.writeoff.mapper.WriteOffEntrypointMapper;
-import com.xts.stock.control.usecase.writeoff.GetDayWriteOffUseCase;
+import com.xts.stock.control.usecase.writeoff.GetWriteOffUseCase;
 import com.xts.stock.control.usecase.writeoff.WriteOffDeleteUseCase;
 import com.xts.stock.control.usecase.writeoff.WriteOffRegisterUseCase;
 import com.xts.stock.control.usecase.writeoff.domain.DeleteWriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
+import com.xts.stock.control.usecase.writeoff.domain.WriteOffSearchRequestDomain;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +31,7 @@ public class WriteOffController {
 
     private final WriteOffRegisterUseCase writeOffRegisterUseCase;
 
-    private final GetDayWriteOffUseCase getDayWriteOffUseCase;
+    private final GetWriteOffUseCase getWriteOffUseCase;
 
     private final WriteOffDeleteUseCase writeOffDeleteUseCase;
 
@@ -52,20 +53,23 @@ public class WriteOffController {
         writeOffRegisterUseCase.execute(requestDomain);
     }
 
-    @GetMapping
-    @Operation(summary = "Get all write offs",
-            description = "Should get all writeOffs",
+    @PostMapping("/search")
+    @Operation(summary = "Get write offs by search parameters",
+            description = "Should get write offs by search parameters",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Success"),
                     @ApiResponse(responseCode = "404", description = "Not found"),
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public @ResponseBody @NotNull List<@Valid WriteOffDayDto> registerNewWriteOff(
-            @RequestParam("firstDay") @NotBlank final String firstDay,
-            @RequestParam("lastDay") @NotBlank final String lastDay) {
+    public @ResponseBody @NotNull List<WriteOffSearchResponseDto> registerNewWriteOff(
+            @RequestParam(value = "serviceOrder", required = false) final String serviceOrder,
+            @RequestBody(required = false) @Valid final WriteOffSearchRequestDto requestDto) {
 
-        final List<WriteOffDomain> responseDomain = getDayWriteOffUseCase.execute(firstDay, lastDay);
+        final WriteOffSearchRequestDomain requestDomain =
+                writeOffEntrypointMapper.searchRequestDtoToDomain(requestDto);
+
+        final List<WriteOffDomain> responseDomain = getWriteOffUseCase.execute(requestDomain, serviceOrder);
 
         return writeOffEntrypointMapper.getAllWriteOffsDomainToDto(responseDomain);
     }

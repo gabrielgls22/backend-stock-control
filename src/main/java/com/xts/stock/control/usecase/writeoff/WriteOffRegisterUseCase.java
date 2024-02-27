@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -34,7 +35,8 @@ public class WriteOffRegisterUseCase {
     }
 
     private void setMaterialsAttributes(final WriteOffDomain requestDomain) {
-        requestDomain.setWriteOffDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        final LocalDate nowBrazil = LocalDate.now(ZoneId.of("America/Sao_Paulo"));
+        requestDomain.setWriteOffDate(nowBrazil.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         validateBarCodeDuplicity(requestDomain.getMaterials());
 
@@ -48,52 +50,24 @@ public class WriteOffRegisterUseCase {
 
         requestDomain.getMaterials().forEach(writeOffMaterial -> {
 
-                StockDomain specificStock = allStock.stream()
-                        .filter(stock -> stock.getMaterialList().stream()
-                                .anyMatch(material -> material.getMaterialsDetails().stream()
-                                        .anyMatch(details ->
-                                                details.getBatchDetails().stream()
-                                                        .anyMatch(batchDetails ->
-                                                                batchDetails.getBarCodes().contains(
-                                                                        writeOffMaterial.getBarCode())))))
-                        .findFirst()
-                        .orElse(null);
+                final StockDomain specificStock = getSpecificStock(allStock, writeOffMaterial);
 
-                if (specificStock != null) {
-                    List<StockMaterialDomain> filteredMaterials = specificStock.getMaterialList().stream()
-                            .filter(material -> material.getMaterialsDetails().stream()
-                                    .anyMatch(details ->
-                                            details.getBatchDetails().stream()
-                                                    .anyMatch(batchDetails ->
-                                                            batchDetails.getBarCodes().contains(
-                                                                    writeOffMaterial.getBarCode())))).toList();
+                if (Objects.nonNull(specificStock)) {
 
-                    List<MaterialDetailsDomain> filteredMaterialsDetails = specificStock.getMaterialList().stream()
-                            .flatMap(material -> material.getMaterialsDetails().stream()
-                                    .filter(materialDetails -> materialDetails.getBatchDetails().stream()
-                                            .anyMatch(batch -> batch.getBarCodes().stream()
-                                                    .anyMatch(barCode ->
-                                                            barCode.equalsIgnoreCase(
-                                                                    writeOffMaterial.getBarCode()))))).toList();
+                    final List<StockMaterialDomain> filteredMaterials =
+                            getFilteredMaterials(writeOffMaterial, specificStock);
 
-                    List<BatchDetailsDomain> specificBatchDetails = specificStock.getMaterialList().stream()
-                            .flatMap(material -> material.getMaterialsDetails().stream()
-                                    .flatMap(materialDetails -> materialDetails.getBatchDetails().stream()
-                                            .filter(batchDetails -> batchDetails.getBarCodes().stream()
-                                                    .anyMatch(barCode ->
-                                                            barCode.equalsIgnoreCase(writeOffMaterial.getBarCode()))
-                                            )
-                                    )
-                            )
-                            .toList();
+                    final List<MaterialDetailsDomain> filteredMaterialsDetails =
+                            getFilteredMaterialsDetails(writeOffMaterial, specificStock);
 
+                    final List<BatchDetailsDomain> specificBatchDetails =
+                            getSpecificBatchDetails(writeOffMaterial, specificStock);
 
                     writeOffMaterial.setSupplier(specificStock.getSupplierName());
                     writeOffMaterial.setName(filteredMaterials.get(0).getMaterialName());
                     writeOffMaterial.setLength(filteredMaterialsDetails.get(0).getLength());
                     writeOffMaterial.setWidth(filteredMaterialsDetails.get(0).getLength());
-                    writeOffMaterial.
-                            setBatch(specificBatchDetails.get(0).getBatch());
+                    writeOffMaterial.setBatch(specificBatchDetails.get(0).getBatch());
 
                     final DeleteMaterialStockDomain deleteMaterialStockDomain = DeleteMaterialStockDomain.builder()
                             .supplierName(specificStock.getSupplierName())
@@ -105,6 +79,20 @@ public class WriteOffRegisterUseCase {
 
                     deleteMaterialStockUseCase.execute(deleteMaterialStockDomain);
                 }
+        });
+    }
+
+    private void validateBarCodeDuplicity(final List<WriteOffMaterialsDomain> writeOffMaterialsDomainList) {
+        final List<String> barCodeList = new ArrayList<>();
+
+        writeOffMaterialsDomainList.forEach(writeOffMaterial -> barCodeList.add(writeOffMaterial.getBarCode()));
+
+        Set<String> uniqueBarCodes = new HashSet<>();
+
+        barCodeList.forEach(barCode -> {
+            if (!uniqueBarCodes.add(barCode)) {
+                throw new BarcodeDuplicityException(barCode);
+            }
         });
     }
 
@@ -124,17 +112,54 @@ public class WriteOffRegisterUseCase {
         });
     }
 
-    private void validateBarCodeDuplicity(final List<WriteOffMaterialsDomain> writeOffMaterialsDomainList) {
-        final List<String> barCodeList = new ArrayList<>();
+    private static List<BatchDetailsDomain> getSpecificBatchDetails(final WriteOffMaterialsDomain writeOffMaterial,
+                                                                    final StockDomain specificStock) {
 
-        writeOffMaterialsDomainList.forEach(writeOffMaterial -> barCodeList.add(writeOffMaterial.getBarCode()));
+        return specificStock.getMaterialList().stream()
+                .flatMap(material -> material.getMaterialsDetails().stream()
+                        .flatMap(materialDetails -> materialDetails.getBatchDetails().stream()
+                                .filter(batchDetails -> batchDetails.getBarCodes().stream()
+                                        .anyMatch(barCode ->
+                                                barCode.equalsIgnoreCase(writeOffMaterial.getBarCode()))
+                                ))).toList();
+    }
 
-        Set<String> uniqueBarCodes = new HashSet<>();
+    private static List<MaterialDetailsDomain> getFilteredMaterialsDetails(
+            final WriteOffMaterialsDomain writeOffMaterial, final StockDomain specificStock) {
 
-        barCodeList.forEach(barCode -> {
-            if (!uniqueBarCodes.add(barCode)) {
-                throw new BarcodeDuplicityException(barCode);
-            }
-        });
+        return specificStock.getMaterialList().stream()
+                .flatMap(material -> material.getMaterialsDetails().stream()
+                        .filter(materialDetails -> materialDetails.getBatchDetails().stream()
+                                .anyMatch(batch -> batch.getBarCodes().stream()
+                                        .anyMatch(barCode ->
+                                                barCode.equalsIgnoreCase(
+                                                        writeOffMaterial.getBarCode()))))).toList();
+    }
+
+    private static List<StockMaterialDomain> getFilteredMaterials(final WriteOffMaterialsDomain writeOffMaterial,
+                                                                  final StockDomain specificStock) {
+
+        return specificStock.getMaterialList().stream()
+                .filter(material -> material.getMaterialsDetails().stream()
+                        .anyMatch(details ->
+                                details.getBatchDetails().stream()
+                                        .anyMatch(batchDetails ->
+                                                batchDetails.getBarCodes().contains(
+                                                        writeOffMaterial.getBarCode())))).toList();
+    }
+
+    private static StockDomain getSpecificStock(final List<StockDomain> allStock,
+                                                final WriteOffMaterialsDomain writeOffMaterial) {
+
+        return allStock.stream()
+                .filter(stock -> stock.getMaterialList().stream()
+                        .anyMatch(material -> material.getMaterialsDetails().stream()
+                                .anyMatch(details ->
+                                        details.getBatchDetails().stream()
+                                                .anyMatch(batchDetails ->
+                                                        batchDetails.getBarCodes().contains(
+                                                                writeOffMaterial.getBarCode())))))
+                .findFirst()
+                .orElse(null);
     }
 }

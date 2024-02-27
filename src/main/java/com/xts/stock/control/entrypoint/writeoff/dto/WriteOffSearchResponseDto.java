@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WriteOffDayDto {
+public class WriteOffSearchResponseDto {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String writeOffDate;

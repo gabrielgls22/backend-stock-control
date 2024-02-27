@@ -31,8 +31,8 @@ public class WriteOffDataProvider implements WriteOffGateway {
     }
 
     @Override
-    public List<WriteOffDomain> getAllWriteOffs(final String firstDay, final String lastDay) {
-        final List<WriteOffDetailsEntity> responseEntity = writeOffRepository.getAllWriteOffs(firstDay, lastDay);
+    public List<WriteOffDomain> getWriteOffsByDate(final String firstDay, final String lastDay) {
+        final List<WriteOffDetailsEntity> responseEntity = writeOffRepository.getWriteOffsByDate(firstDay, lastDay);
 
         return writeOffRepositoryMapper.getAllWriteOffsEntityToDomain(responseEntity);
     }
@@ -43,5 +43,12 @@ public class WriteOffDataProvider implements WriteOffGateway {
                 writeOffRepositoryMapper.deleteWriteOffDomainToEntity(requestDomain);
 
         writeOffRepository.deleteWriteOff(requestEntity);
+    }
+
+    @Override
+    public WriteOffDomain getWriteOffByServiceOrder(final String serviceOrder) {
+        final WriteOffDetailsEntity responseEntity = writeOffRepository.getWriteOffByServiceOrder(serviceOrder);
+
+        return writeOffRepositoryMapper.writeOffByServiceOrderEntityToDomain(responseEntity);
     }
 }

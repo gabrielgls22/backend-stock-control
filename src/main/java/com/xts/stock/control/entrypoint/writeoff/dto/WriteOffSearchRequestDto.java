@@ -7,24 +7,32 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WriteOffMaterialsDto {
-
-    @NotBlank(message = "Barcode is required")
-    private String barCode;
+public class WriteOffSearchRequestDto {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String lengthUsed;
+    private String costumerCnpj;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String name;
+    private String costumerName;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String supplier;
+    private String tagCode;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String batch;
+    private String tagName;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String material;
+
+    @NotBlank(message = "firstDay search is required")
+    private String firstDay;
+
+    @NotBlank(message = "lastDay search is required")
+    private String lastDay;
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Optional;
 
 @Component
 public class Utils {
@@ -18,10 +19,16 @@ public class Utils {
     }
 
     public static String removeSignals(final String valueWithSignals) {
-        return valueWithSignals.replaceAll("[./-]", "");
+
+        return Optional.ofNullable(valueWithSignals)
+                .map(value -> value.replaceAll("[./-]", ""))
+                .orElse(null);
     }
 
     public static String cnpjRegex(final String cnpjWithoutRegex) {
-        return cnpjWithoutRegex.replaceAll("(\\d{2})(\\d{3})(\\d{3})(\\d{4})(\\d{2})", "$1.$2.$3/$4-$5");
+        return Optional.ofNullable(cnpjWithoutRegex)
+                .map(cnpjValue -> cnpjValue
+                        .replaceAll("(\\d{2})(\\d{3})(\\d{3})(\\d{4})(\\d{2})", "$1.$2.$3/$4-$5"))
+                .orElse(null);
     }
 }

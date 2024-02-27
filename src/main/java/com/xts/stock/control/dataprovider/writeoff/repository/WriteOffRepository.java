@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -44,16 +43,16 @@ public class WriteOffRepository {
     }
 
 
-    public List<WriteOffDetailsEntity> getAllWriteOffs(final String firstDay, final String lastDay) {
+    public List<WriteOffDetailsEntity> getWriteOffsByDate(final String firstDay, final String lastDay) {
         try {
             final Query query = new Query();
 
-            final LocalDate firstDayFormated = LocalDate.parse(firstDay);
-            final LocalDate lastDayFormatedd = LocalDate.parse(lastDay).plusDays(1);
+            final LocalDate firstDayFormatted = LocalDate.parse(firstDay);
+            final LocalDate lastDayFormatted = LocalDate.parse(lastDay).plusDays(1);
 
             final Criteria dateCriteria = Criteria.where("id")
-                    .gte(firstDayFormated.format(DateTimeFormatter.ISO_DATE))
-                    .lt(lastDayFormatedd.format(DateTimeFormatter.ISO_DATE));
+                    .gte(firstDayFormatted.format(DateTimeFormatter.ISO_DATE))
+                    .lt(lastDayFormatted.format(DateTimeFormatter.ISO_DATE));
 
             query.addCriteria(dateCriteria);
 
@@ -89,6 +88,20 @@ public class WriteOffRepository {
 
         } catch (final StandardException e) {
             throw new StandardException("Erro ao deletar saída de etiqueta.");
+        }
+    }
+
+    public WriteOffDetailsEntity getWriteOffByServiceOrder(final String serviceOrder) {
+        try {
+
+            final WriteOffEntity writeOffEntity = writeOffDbRepository.findByWriteOffListServiceOrder(serviceOrder)
+                    .orElseThrow(() ->
+                            new StandardException("Order de serviço de número " + serviceOrder + " não encontrada"));
+
+            return writeOffEntity.getWriteOffList().get(0);
+
+        } catch (final StandardException e) {
+            throw new StandardException("Order de serviço de número " + serviceOrder + " não encontrada.");
         }
     }
 }

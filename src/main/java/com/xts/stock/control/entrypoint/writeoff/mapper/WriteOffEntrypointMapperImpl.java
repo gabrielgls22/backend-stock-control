@@ -1,12 +1,10 @@
 package com.xts.stock.control.entrypoint.writeoff.mapper;
 
-import com.xts.stock.control.entrypoint.writeoff.dto.DeleteWriteOffDto;
-import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffDayDto;
-import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffDto;
-import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffMaterialsDto;
+import com.xts.stock.control.entrypoint.writeoff.dto.*;
 import com.xts.stock.control.usecase.writeoff.domain.DeleteWriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffMaterialsDomain;
+import com.xts.stock.control.usecase.writeoff.domain.WriteOffSearchRequestDomain;
 import com.xts.stock.control.utils.Utils;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
@@ -37,11 +36,11 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
     }
 
     @Override
-    public List<WriteOffDayDto> getAllWriteOffsDomainToDto(final List<WriteOffDomain> writeOffDomainList) {
-        final List<WriteOffDayDto> writeOffDayDtoList = new ArrayList<>();
+    public List<WriteOffSearchResponseDto> getAllWriteOffsDomainToDto(final List<WriteOffDomain> writeOffDomainList) {
+        final List<WriteOffSearchResponseDto> writeOffSearchResponseDtoList = new ArrayList<>();
 
         writeOffDomainList.forEach(writeOffDomain -> {
-            final WriteOffDayDto writeOffDayDto = WriteOffDayDto.builder()
+            final WriteOffSearchResponseDto writeOffSearchResponseDto = WriteOffSearchResponseDto.builder()
                     .writeOffDate(formatDateToDayMonthYear(writeOffDomain.getWriteOffDate()))
                     .writeOffCode(writeOffDomain.getWriteOffCode())
                     .costumerCnpj(Utils.cnpjRegex(writeOffDomain.getCostumerCnpj()))
@@ -52,10 +51,10 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
                     .materials(responseWriteOffMaterialsDomainToDto(writeOffDomain.getMaterials()))
                     .build();
 
-            writeOffDayDtoList.add(writeOffDayDto);
+            writeOffSearchResponseDtoList.add(writeOffSearchResponseDto);
         });
 
-        return writeOffDayDtoList;
+        return writeOffSearchResponseDtoList;
     }
 
     @Override
@@ -71,6 +70,22 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
         return writeOffDomainBuilder.build();
     }
 
+    @Override
+    public WriteOffSearchRequestDomain searchRequestDtoToDomain(final WriteOffSearchRequestDto requestDto) {
+
+        return Optional.ofNullable(requestDto)
+                .map(writeOffDto -> WriteOffSearchRequestDomain.builder()
+                        .costumerCnpj(Utils.removeSignals(writeOffDto.getCostumerCnpj()))
+                        .costumerName(writeOffDto.getCostumerName())
+                        .tagCode(writeOffDto.getTagCode())
+                        .tagName(writeOffDto.getTagName())
+                        .material(writeOffDto.getMaterial())
+                        .firstDay(writeOffDto.getFirstDay())
+                        .lastDay(writeOffDto.getLastDay())
+                        .build()
+                ).orElse(WriteOffSearchRequestDomain.builder().build());
+    }
+
     protected List<WriteOffMaterialsDomain> responseTagListDtoToDomain(
             final List<WriteOffMaterialsDto> writeOffDtoList) {
         final List<WriteOffMaterialsDomain> writeOffMaterialsDomainList = new ArrayList<>();
@@ -78,7 +93,7 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
         writeOffDtoList.forEach(writeOffDto -> {
             final WriteOffMaterialsDomain writeOffDomain = WriteOffMaterialsDomain.builder()
                     .barCode(writeOffDto.getBarCode().trim())
-                    .lengthUsed(writeOffDto.getLengthUsed().trim())
+                    .lengthUsed(writeOffDto.getLengthUsed())
                     .build();
 
             writeOffMaterialsDomainList.add(writeOffDomain);
@@ -95,7 +110,6 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
         materialsDomainList.forEach(materialDomain -> {
             final WriteOffMaterialsDto materialsDto = WriteOffMaterialsDto.builder()
                     .barCode(materialDomain.getBarCode())
-                    .lengthUsed(materialDomain.getLengthUsed())
                     .name(materialDomain.getName())
                     .supplier(materialDomain.getSupplier())
                     .batch(materialDomain.getBatch())

@@ -97,13 +97,15 @@ public class CostumerController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public void updateTagInformation(
+    public @ResponseBody List<CostumerDto> updateTagInformation(
             @RequestBody @Valid @NotNull final TagUpdateRequestDto requestDto) {
 
         final TagUpdateRequestDomain requestDomain =
                 costumerEntrypointMapper.updateTagRequestDtoToDomain(requestDto);
 
-        tagUpdateUseCase.execute(requestDomain);
+        final List<CostumerDomain> responseDomain = tagUpdateUseCase.execute(requestDomain);
+
+        return costumerEntrypointMapper.getAllCostumersDomainToDto(responseDomain);
     }
 
     @DeleteMapping("/{costumerCnpj}")
