@@ -13,4 +13,6 @@ public interface WriteOffGateway {
     void deleteWriteOff(DeleteWriteOffDomain requestDomain);
 
     WriteOffDomain getWriteOffByServiceOrder(String serviceOrder);
+
+    void validateServiceOrderDuplicity(String serviceOrder);
 }

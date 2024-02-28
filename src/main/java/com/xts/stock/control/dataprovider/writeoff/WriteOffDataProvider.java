@@ -51,4 +51,10 @@ public class WriteOffDataProvider implements WriteOffGateway {
 
         return writeOffRepositoryMapper.writeOffByServiceOrderEntityToDomain(responseEntity);
     }
+
+    @Override
+    public void validateServiceOrderDuplicity(final String serviceOrder) {
+
+        writeOffRepository.validateServiceOrderDuplicity(serviceOrder);
+    }
 }

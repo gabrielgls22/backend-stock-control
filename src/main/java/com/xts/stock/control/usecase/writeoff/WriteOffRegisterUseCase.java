@@ -6,10 +6,12 @@ import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException
 import com.xts.stock.control.usecase.stock.DeleteMaterialStockUseCase;
 import com.xts.stock.control.usecase.stock.GetAllStockUseCase;
 import com.xts.stock.control.usecase.stock.domain.*;
+import com.xts.stock.control.usecase.stock.gateway.StockGateway;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffMaterialsDomain;
 import com.xts.stock.control.usecase.writeoff.gateway.WriteOffGateway;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.ap.internal.util.Strings;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,24 +25,50 @@ public class WriteOffRegisterUseCase {
 
     private final WriteOffGateway writeOffGateway;
 
-    private final GetAllStockUseCase getAllStockUseCase;
+    private final StockGateway stockGateway;
 
     private final DeleteMaterialStockUseCase deleteMaterialStockUseCase;
 
     public void execute(final WriteOffDomain requestDomain) {
 
-        setMaterialsAttributes(requestDomain);
+        final List<StockDomain> allStock = stockGateway.getAllStock();
 
-        writeOffGateway.registerWriteOff(requestDomain);
+        writeOffGateway.validateServiceOrderDuplicity(requestDomain.getServiceOrder());
+
+        final WriteOffDomain writeOffWithLengthUsed = getWriteOffWithLengthUsed(requestDomain, allStock);
+
+        setMaterialsAttributes(requestDomain, allStock);
+
+        writeOffGateway.registerWriteOff(writeOffWithLengthUsed);
     }
 
-    private void setMaterialsAttributes(final WriteOffDomain requestDomain) {
+    private WriteOffDomain getWriteOffWithLengthUsed(WriteOffDomain writeOffDomain,
+                                                     final List<StockDomain> allStock) {
+
+        writeOffDomain.getMaterials().forEach(materialDomain -> {
+
+            if (Strings.isEmpty(materialDomain.getLengthUsed())) {
+                allStock.forEach(stock -> stock.getMaterialList().forEach(material ->
+                        material.getMaterialsDetails().forEach(materialDetails ->
+                                materialDetails.getBatchDetails().forEach(batchDetail -> {
+                                    if (batchDetail.getBarCodes().contains(
+                                            materialDomain.getBarCode())) {
+
+                                        materialDomain.setLengthUsed(materialDetails.getLength());
+                                    }
+                                }))));
+
+            }
+        });
+
+        return writeOffDomain;
+    }
+
+    private void setMaterialsAttributes(final WriteOffDomain requestDomain, final List<StockDomain> allStock) {
         final LocalDate nowBrazil = LocalDate.now(ZoneId.of("America/Sao_Paulo"));
         requestDomain.setWriteOffDate(nowBrazil.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         validateBarCodeDuplicity(requestDomain.getMaterials());
-
-        final List<StockDomain> allStock = getAllStockUseCase.execute();
 
         if (Objects.isNull(allStock)) {
             throw new StandardException("Erro ao buscar o estoque.");
