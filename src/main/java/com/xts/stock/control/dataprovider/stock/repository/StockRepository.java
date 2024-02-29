@@ -55,7 +55,12 @@ public class StockRepository {
                                 });
 
                                 if (!isAnExistingBarcode.get()) {
-                                    throw new BarcodeDoesNotExistException(requestEntity.getBarCode());
+                                    throw new BarcodeDoesNotExistException(
+                                            "Cadastro não realizado! O material com código de barras "
+                                                    + requestEntity.getBarCode() + " não existe para o material " +
+                                                    requestEntity.getMaterialName() + " do fornecedor " +
+                                                    requestEntity.getSupplierName()
+                                            );
                                 }
 
                                 materialDetails.getBatchDetails().removeIf(batch ->

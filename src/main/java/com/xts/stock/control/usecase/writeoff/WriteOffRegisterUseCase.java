@@ -135,7 +135,9 @@ public class WriteOffRegisterUseCase {
                     .anyMatch(batch -> batch.getBarCodes().contains(writeOffMaterial.getBarCode()));
 
             if (!isAnExistingBarCode) {
-                throw new BarcodeDoesNotExistException(writeOffMaterial.getBarCode());
+                throw new BarcodeDoesNotExistException(
+                        "Cadastro não realizado! O material com código de barras "
+                                + writeOffMaterial.getBarCode() + " não existe no estoque." );
             }
         });
     }

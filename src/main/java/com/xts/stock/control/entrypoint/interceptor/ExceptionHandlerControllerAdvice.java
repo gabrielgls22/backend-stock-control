@@ -57,8 +57,7 @@ public class ExceptionHandlerControllerAdvice {
 
         final ErrorDto errorDto = ErrorDto.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
-                .message("Cadastro não realizado! O material com código de barras "
-                        + barcodeDoesNotExistException.getMessage() + " não existe no estoque.")
+                .message(barcodeDoesNotExistException.getMessage())
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
