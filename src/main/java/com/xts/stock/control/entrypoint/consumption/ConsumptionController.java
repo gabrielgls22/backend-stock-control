@@ -1,8 +1,13 @@
 package com.xts.stock.control.entrypoint.consumption;
 
+import com.xts.stock.control.entrypoint.consumption.dto.ConsumptionConsultRequestDto;
+import com.xts.stock.control.entrypoint.consumption.dto.ConsumptionConsultResponseDto;
 import com.xts.stock.control.entrypoint.consumption.dto.ConsumptionDto;
 import com.xts.stock.control.entrypoint.consumption.mapper.ConsumptionEntrypointMapper;
+import com.xts.stock.control.usecase.consumption.GetConsumptionByCodeUseCase;
 import com.xts.stock.control.usecase.consumption.GetConsumptionUseCase;
+import com.xts.stock.control.usecase.consumption.domain.ConsumptionConsultRequestDomain;
+import com.xts.stock.control.usecase.consumption.domain.ConsumptionConsultResponseDomain;
 import com.xts.stock.control.usecase.consumption.domain.ConsumptionDomain;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,6 +27,7 @@ import java.util.List;
 public class ConsumptionController {
 
     private final GetConsumptionUseCase getConsumptionUseCase;
+    private final GetConsumptionByCodeUseCase getConsumptionByCodeUseCase;
 
     private final ConsumptionEntrypointMapper consumptionEntrypointMapper;
 
@@ -41,5 +47,26 @@ public class ConsumptionController {
         final List<ConsumptionDomain> responseDomain = getConsumptionUseCase.execute(firstDay, lastDay);
 
         return consumptionEntrypointMapper.getConsumptionDomainToDto(responseDomain);
+    }
+
+    @PostMapping("/consult")
+    @Operation(summary = "Get consumption by materialCode",
+            description = "Should get consumption by materialCode",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
+    public @ResponseBody @NotNull List<ConsumptionConsultResponseDto> getConsumptionByMaterialCode(
+            @RequestBody @NotNull ConsumptionConsultRequestDto requestDto) {
+
+        final ConsumptionConsultRequestDomain requestDomain =
+                consumptionEntrypointMapper.consumptionRequestDtoToDomain(requestDto);
+
+        final List<ConsumptionConsultResponseDomain> responseDomain =
+                getConsumptionByCodeUseCase.execute(requestDomain);
+
+        return consumptionEntrypointMapper.consumptionResponseDomainToDto(responseDomain);
     }
 }

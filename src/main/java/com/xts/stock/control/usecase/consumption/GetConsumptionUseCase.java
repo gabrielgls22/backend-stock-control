@@ -25,9 +25,9 @@ public class GetConsumptionUseCase {
         return writeOffDomainList.stream()
                 .flatMap(writeOff -> writeOff.getMaterials().stream())
                 .collect(Collectors.groupingBy(
-                        WriteOffMaterialsDomain::getSupplier,
+                        WriteOffMaterialsDomain::getName,
                         Collectors.groupingBy(material ->
-                                        material.getName() + material.getLength() + material.getWidth(),
+                                                material.getLength() + material.getWidth(),
                                 Collectors.collectingAndThen(
                                         Collectors.toList(),
                                         materialsList -> {
@@ -37,7 +37,7 @@ public class GetConsumptionUseCase {
                                                     .sum();
                                             int totalRemovedFromStock = materialsList.size();
                                             return ConsumptionMaterialDomain.builder()
-                                                    .name(firstMaterial.getName())
+                                                    .supplier(firstMaterial.getSupplier())
                                                     .lengthUsed(totalLengthUsed)
                                                     .removedFromStock(totalRemovedFromStock)
                                                     .width(firstMaterial.getWidth())
@@ -49,7 +49,7 @@ public class GetConsumptionUseCase {
                 ))
                 .entrySet().stream()
                 .map(entry -> ConsumptionDomain.builder()
-                        .supplier(entry.getKey())
+                        .materialName(entry.getKey())
                         .materials(new ArrayList<>(entry.getValue().values()))
                         .build())
                 .collect(Collectors.toList());

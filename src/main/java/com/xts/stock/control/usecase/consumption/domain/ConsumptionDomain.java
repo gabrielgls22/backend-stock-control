@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ConsumptionDomain {
 
-    private String supplier;
+    private String materialName;
     private List<ConsumptionMaterialDomain> materials;
 }

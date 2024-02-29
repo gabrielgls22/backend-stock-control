@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ConsumptionMaterialDto {
 
-    private String name;
+    private String supplier;
     private Integer lengthUsed;
     private Integer removedFromStock;
     private String width;

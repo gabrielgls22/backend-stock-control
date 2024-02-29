@@ -1,5 +1,6 @@
 package com.xts.stock.control.usecase.consumption.domain;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,11 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConsumptionMaterialDomain {
+public class ConsumptionConsultRequestDomain {
 
-    private String supplier;
-    private Integer lengthUsed;
-    private Integer removedFromStock;
-    private String width;
-    private String length;
+    private String materialCode;
+    private String firstDay;
+    private String lastDay;
 }

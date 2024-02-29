@@ -2,10 +2,10 @@ package com.xts.stock.control.entrypoint.interceptor;
 
 import com.xts.stock.control.entrypoint.interceptor.dto.ErrorDto;
 import com.xts.stock.control.entrypoint.interceptor.exceptions.*;
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -117,7 +117,7 @@ public class ExceptionHandlerControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
     }
 
-    @ExceptionHandler(LoginDetailsException.class)
+    @ExceptionHandler({LoginDetailsException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public @ResponseBody ResponseEntity<ErrorDto> handleLoginDetailsException(
             final LoginDetailsException loginDetailsException) {
@@ -127,6 +127,21 @@ public class ExceptionHandlerControllerAdvice {
         final ErrorDto errorDto = ErrorDto.builder()
                 .status(HttpStatus.UNAUTHORIZED.value())
                 .message(loginDetailsException.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDto);
+    }
+
+    @ExceptionHandler({BadCredentialsException.class})
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public @ResponseBody ResponseEntity<ErrorDto> handleBadCredentialsException(
+            final BadCredentialsException badCredentialsException) {
+
+        log.debug(badCredentialsException.getMessage());
+
+        final ErrorDto errorDto = ErrorDto.builder()
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .message("Usuário e/ou senha inválidos")
                 .build();
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDto);

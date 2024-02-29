@@ -9,11 +9,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConsumptionMaterialDomain {
+public class ConsumptionConsultResponseDomain {
 
-    private String supplier;
-    private Integer lengthUsed;
-    private Integer removedFromStock;
+    private String supplierName;
+    private String materialName;
     private String width;
     private String length;
+    private Integer lengthUsed;
+    private Integer removedFromStock;
 }

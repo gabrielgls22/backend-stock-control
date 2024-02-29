@@ -1,7 +1,11 @@
 package com.xts.stock.control.entrypoint.consumption.mapper;
 
+import com.xts.stock.control.entrypoint.consumption.dto.ConsumptionConsultRequestDto;
+import com.xts.stock.control.entrypoint.consumption.dto.ConsumptionConsultResponseDto;
 import com.xts.stock.control.entrypoint.consumption.dto.ConsumptionDto;
 import com.xts.stock.control.entrypoint.consumption.dto.ConsumptionMaterialDto;
+import com.xts.stock.control.usecase.consumption.domain.ConsumptionConsultRequestDomain;
+import com.xts.stock.control.usecase.consumption.domain.ConsumptionConsultResponseDomain;
 import com.xts.stock.control.usecase.consumption.domain.ConsumptionDomain;
 import com.xts.stock.control.usecase.consumption.domain.ConsumptionMaterialDomain;
 import org.springframework.stereotype.Component;
@@ -18,7 +22,7 @@ public class ConsumptionEntrypointMapperImpl implements ConsumptionEntrypointMap
 
         responseDomain.forEach(consumptionDomain -> {
             final ConsumptionDto consumptionDto = ConsumptionDto.builder()
-                    .supplier(consumptionDomain.getSupplier())
+                    .materialName(consumptionDomain.getMaterialName())
                     .materials(responseConsumptionMaterialDomainToDto(consumptionDomain.getMaterials()))
                     .build();
 
@@ -28,13 +32,46 @@ public class ConsumptionEntrypointMapperImpl implements ConsumptionEntrypointMap
         return consumptionDtoList;
     }
 
+    @Override
+    public ConsumptionConsultRequestDomain consumptionRequestDtoToDomain(
+            final ConsumptionConsultRequestDto requestDto) {
+
+        return ConsumptionConsultRequestDomain.builder()
+                .materialCode(requestDto.getMaterialCode())
+                .firstDay(requestDto.getFirstDay())
+                .lastDay(requestDto.getLastDay())
+                .build();
+    }
+
+    @Override
+    public List<ConsumptionConsultResponseDto> consumptionResponseDomainToDto(
+            final List<ConsumptionConsultResponseDomain> responseDomain) {
+
+        final List<ConsumptionConsultResponseDto> consultResponseDtoList = new ArrayList<>();
+
+        responseDomain.forEach(consumptionConsult -> {
+            final ConsumptionConsultResponseDto responseDto = ConsumptionConsultResponseDto.builder()
+                    .supplierName(consumptionConsult.getSupplierName())
+                    .materialName(consumptionConsult.getMaterialName())
+                    .widthAndLength(String.format("%s x %s",
+                            consumptionConsult.getWidth(), consumptionConsult.getLength()))
+                    .lengthUsed(consumptionConsult.getLengthUsed())
+                    .removedFromStock(consumptionConsult.getRemovedFromStock())
+                    .build();
+
+            consultResponseDtoList.add(responseDto);
+        });
+
+        return consultResponseDtoList;
+    }
+
     private List<ConsumptionMaterialDto> responseConsumptionMaterialDomainToDto(
             final List<ConsumptionMaterialDomain> consumptionMaterialDomainList) {
         final List<ConsumptionMaterialDto> consumptionMaterialDtoList = new ArrayList<>();
 
         consumptionMaterialDomainList.forEach(consumptionMaterialDomain -> {
             final ConsumptionMaterialDto consumptionMaterialDto = ConsumptionMaterialDto.builder()
-                    .name(consumptionMaterialDomain.getName())
+                    .supplier(consumptionMaterialDomain.getSupplier())
                     .lengthUsed(consumptionMaterialDomain.getLengthUsed())
                     .removedFromStock(consumptionMaterialDomain.getRemovedFromStock())
                     .width(consumptionMaterialDomain.getWidth())

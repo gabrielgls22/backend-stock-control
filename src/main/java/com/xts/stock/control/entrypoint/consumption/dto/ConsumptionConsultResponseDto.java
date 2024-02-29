@@ -5,14 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConsumptionDto {
+public class ConsumptionConsultResponseDto {
 
+    private String supplierName;
     private String materialName;
-    private List<ConsumptionMaterialDto> materials;
+    private String widthAndLength;
+    private Integer lengthUsed;
+    private Integer removedFromStock;
 }
