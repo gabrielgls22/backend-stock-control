@@ -27,7 +27,7 @@ public class CostumerRegisterUseCase {
                 allCostumers.forEach(customerResponse ->
                         customerResponse.getTagList().forEach(tag -> {
                             if (tag.getCode().equalsIgnoreCase(customerDomain.getCode())) {
-                                throw new TagAlreadyExistException(customerDomain.getName(), customerDomain.getCode());
+                                throw new TagAlreadyExistException(tag.getName(), customerDomain.getCode());
                             }
                         })));
     }

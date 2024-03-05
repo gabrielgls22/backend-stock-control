@@ -3,7 +3,6 @@ package com.xts.stock.control.usecase.costumer;
 import com.xts.stock.control.entrypoint.interceptor.exceptions.TagAlreadyExistException;
 import com.xts.stock.control.usecase.costumer.domain.CostumerDomain;
 import com.xts.stock.control.usecase.costumer.domain.TagAddRequestDomain;
-import com.xts.stock.control.usecase.costumer.domain.TagAddResponseDomain;
 import com.xts.stock.control.usecase.costumer.domain.TagDomain;
 import com.xts.stock.control.usecase.costumer.gateway.CostumerGateway;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +42,7 @@ public class TagAddUseCase {
         allCostumers.forEach(customerResponse ->
                 customerResponse.getTagList().forEach(tag -> {
                     if (tag.getCode().equalsIgnoreCase(requestDomain.getCode())) {
-                        throw new TagAlreadyExistException(requestDomain.getName(), requestDomain.getCode());
+                        throw new TagAlreadyExistException(tag.getName(), requestDomain.getCode());
                     }
                 }));
     }

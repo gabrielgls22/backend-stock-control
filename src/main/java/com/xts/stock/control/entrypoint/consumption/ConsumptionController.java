@@ -50,8 +50,8 @@ public class ConsumptionController {
     }
 
     @PostMapping("/consult")
-    @Operation(summary = "Get consumption by materialCode",
-            description = "Should get consumption by materialCode",
+    @Operation(summary = "Get consumption by supplier",
+            description = "Should get consumption by supplier",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Success"),
                     @ApiResponse(responseCode = "404", description = "Not found"),

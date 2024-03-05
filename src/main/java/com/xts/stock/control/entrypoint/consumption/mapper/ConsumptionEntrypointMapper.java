@@ -12,7 +12,6 @@ import java.util.List;
 public interface ConsumptionEntrypointMapper {
     List<ConsumptionDto> getConsumptionDomainToDto(List<ConsumptionDomain> responseDomain);
 
-
     ConsumptionConsultRequestDomain consumptionRequestDtoToDomain(ConsumptionConsultRequestDto requestDto);
 
     List<ConsumptionConsultResponseDto> consumptionResponseDomainToDto(List<ConsumptionConsultResponseDomain> responseDomain);

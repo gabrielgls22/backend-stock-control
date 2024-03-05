@@ -12,8 +12,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ConsumptionConsultRequestDto {
 
-    @NotBlank(message = "materialCode is required")
-    private String materialCode;
+    @NotBlank(message = "supplierName is required")
+    private String supplierName;
+
+    @NotBlank(message = "supplierCnpj is required")
+    private String supplierCnpj;
 
     @NotBlank(message = "firstDay is required")
     private String firstDay;

@@ -8,6 +8,7 @@ import com.xts.stock.control.usecase.consumption.domain.ConsumptionConsultReques
 import com.xts.stock.control.usecase.consumption.domain.ConsumptionConsultResponseDomain;
 import com.xts.stock.control.usecase.consumption.domain.ConsumptionDomain;
 import com.xts.stock.control.usecase.consumption.domain.ConsumptionMaterialDomain;
+import com.xts.stock.control.utils.Utils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -37,7 +38,8 @@ public class ConsumptionEntrypointMapperImpl implements ConsumptionEntrypointMap
             final ConsumptionConsultRequestDto requestDto) {
 
         return ConsumptionConsultRequestDomain.builder()
-                .materialCode(requestDto.getMaterialCode())
+                .supplierName(requestDto.getSupplierName())
+                .supplierCnpj(Utils.removeSignals(requestDto.getSupplierCnpj()))
                 .firstDay(requestDto.getFirstDay())
                 .lastDay(requestDto.getLastDay())
                 .build();
@@ -51,7 +53,6 @@ public class ConsumptionEntrypointMapperImpl implements ConsumptionEntrypointMap
 
         responseDomain.forEach(consumptionConsult -> {
             final ConsumptionConsultResponseDto responseDto = ConsumptionConsultResponseDto.builder()
-                    .supplierName(consumptionConsult.getSupplierName())
                     .materialName(consumptionConsult.getMaterialName())
                     .widthAndLength(String.format("%s x %s",
                             consumptionConsult.getWidth(), consumptionConsult.getLength()))

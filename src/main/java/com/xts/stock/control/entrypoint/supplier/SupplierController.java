@@ -23,6 +23,7 @@ public class SupplierController {
 
     private final SupplierEntrypointMapper supplierEntrypointMapper;
 
+
     private final SupplierRegisterUseCase supplierRegisterUseCase;
 
     private final GetAllSuppliersUseCase getAllSuppliersUseCase;
@@ -36,6 +37,8 @@ public class SupplierController {
     private final MaterialDeleteUseCase materialDeleteUseCase;
 
     private final MaterialAddUseCase materialAddUseCase;
+
+    private final GetAllMaterialsUseCase getAllMaterialsUseCase;
 
 
     @PostMapping("/register")
@@ -160,5 +163,21 @@ public class SupplierController {
         final List<SupplierDomain> responseDomain = materialAddUseCase.execute(requestDomain);
 
         return supplierEntrypointMapper.getAllSuppliersDomainToDto(responseDomain);
+    }
+
+    @GetMapping("/materials")
+    @Operation(summary = "Get all materials",
+            description = "Should get all materials",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
+    public @ResponseBody List<MaterialDto> getAllMaterials() {
+
+        final List<MaterialDomain> responseDomain = getAllMaterialsUseCase.execute();
+
+        return supplierEntrypointMapper.getAllMaterialsDomainToDto(responseDomain);
     }
 }

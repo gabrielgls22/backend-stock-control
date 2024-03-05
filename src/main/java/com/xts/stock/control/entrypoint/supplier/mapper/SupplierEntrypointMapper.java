@@ -18,4 +18,6 @@ public interface SupplierEntrypointMapper {
     MaterialDeleteRequestDomain deleteMaterialRequestDtoToDomain(MaterialDeleteRequestDto requestDto);
 
     MaterialAddRequestDomain addMaterialRequestDtoToDomain(MaterialAddRequestDto requestDto);
+
+    List<MaterialDto> getAllMaterialsDomainToDto(List<MaterialDomain> responseDomain);
 }

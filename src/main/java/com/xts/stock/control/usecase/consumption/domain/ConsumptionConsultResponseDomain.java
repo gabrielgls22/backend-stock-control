@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ConsumptionConsultResponseDomain {
 
-    private String supplierName;
     private String materialName;
     private String width;
     private String length;

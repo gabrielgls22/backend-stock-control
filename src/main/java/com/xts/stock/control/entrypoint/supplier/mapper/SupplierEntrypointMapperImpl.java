@@ -109,6 +109,26 @@ public class SupplierEntrypointMapperImpl implements SupplierEntrypointMapper {
         return materialAddRequestDomainBuilder.build();
     }
 
+    @Override
+    public List<MaterialDto> getAllMaterialsDomainToDto(final List<MaterialDomain> responseDomain) {
+        final List<MaterialDto> materialsResponseDtoList = new ArrayList<>();
+
+        if (!responseDomain.isEmpty()) {
+            responseDomain.forEach(materialDomain -> {
+
+                final MaterialDto responseDto = MaterialDto.builder()
+                        .name(materialDomain.getName())
+                        .code(materialDomain.getCode())
+                        .description(materialDomain.getDescription())
+                        .build();
+
+                materialsResponseDtoList.add(responseDto);
+            });
+        }
+
+        return materialsResponseDtoList;
+    }
+
     protected List<MaterialDomain> responseMaterialListDtoToDomain(final List<MaterialDto> materialDtoList) {
         final List<MaterialDomain> materialDomainList = new ArrayList<>();
 
