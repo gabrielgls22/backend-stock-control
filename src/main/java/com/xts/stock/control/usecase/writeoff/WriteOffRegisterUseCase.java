@@ -4,7 +4,6 @@ import com.xts.stock.control.entrypoint.interceptor.exceptions.BarcodeDoesNotExi
 import com.xts.stock.control.entrypoint.interceptor.exceptions.BarcodeDuplicityException;
 import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException;
 import com.xts.stock.control.usecase.stock.DeleteMaterialStockUseCase;
-import com.xts.stock.control.usecase.stock.GetAllStockUseCase;
 import com.xts.stock.control.usecase.stock.domain.*;
 import com.xts.stock.control.usecase.stock.gateway.StockGateway;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
@@ -45,21 +44,23 @@ public class WriteOffRegisterUseCase {
     private WriteOffDomain getWriteOffWithLengthUsed(WriteOffDomain writeOffDomain,
                                                      final List<StockDomain> allStock) {
 
-        writeOffDomain.getMaterials().forEach(materialDomain -> {
-
-            if (Strings.isEmpty(materialDomain.getLengthUsed())) {
+        writeOffDomain.getMaterials().forEach(materialDomain ->
                 allStock.forEach(stock -> stock.getMaterialList().forEach(material ->
                         material.getMaterialsDetails().forEach(materialDetails ->
                                 materialDetails.getBatchDetails().forEach(batchDetail -> {
                                     if (batchDetail.getBarCodes().contains(
                                             materialDomain.getBarCode())) {
 
-                                        materialDomain.setLengthUsed(materialDetails.getLength());
-                                    }
-                                }))));
+                                        if (Strings.isEmpty(materialDomain.getLengthUsed())) {
+                                            materialDomain.setLengthUsed(materialDetails.getLength());
 
-            }
-        });
+                                        } else if (Integer.parseInt(materialDomain.getLengthUsed()) >
+                                                Integer.parseInt(materialDetails.getLength())) {
+                                            materialDomain.setLengthUsed(materialDetails.getLength());
+                                        }
+                                    }
+                                }))))
+        );
 
         return writeOffDomain;
     }
