@@ -13,5 +13,4 @@ public class RegisterRequestDomain {
 
     private String username;
     private String password;
-    private Boolean admin;
 }

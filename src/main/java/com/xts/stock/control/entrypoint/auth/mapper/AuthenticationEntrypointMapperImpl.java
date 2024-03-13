@@ -34,7 +34,6 @@ public class AuthenticationEntrypointMapperImpl implements AuthenticationEntrypo
         if (Objects.nonNull(requestDto)) {
             registerRequestDomainBuilder.username(requestDto.getUsername());
             registerRequestDomainBuilder.password(requestDto.getPassword());
-            registerRequestDomainBuilder.admin(requestDto.getAdmin());
         }
 
         return registerRequestDomainBuilder.build();

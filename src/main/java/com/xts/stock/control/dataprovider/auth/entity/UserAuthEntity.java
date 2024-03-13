@@ -24,7 +24,6 @@ public class UserAuthEntity implements UserDetails {
     private String username;
 
     private String password;
-    private Boolean admin;
 
     private Role role;
 

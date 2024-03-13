@@ -17,7 +17,4 @@ public class RegisterRequestDto {
 
     @NotBlank(message = "password is required")
     private String password;
-
-    @NotBlank(message = "admin is required")
-    private Boolean admin;
 }

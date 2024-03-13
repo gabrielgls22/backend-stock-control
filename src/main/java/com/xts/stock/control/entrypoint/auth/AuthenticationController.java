@@ -27,16 +27,11 @@ public class AuthenticationController {
     private final AuthenticationUseCase authenticationUseCase;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponseDto> registerUser(
-            @RequestBody final RegisterRequestDto requestDto
-    ) {
+    public void registerUser(@RequestBody final RegisterRequestDto requestDto) {
         final RegisterRequestDomain requestDomain =
                 authenticationEntrypointMapper.registerRequestDtoToDomain(requestDto);
 
-        final AuthenticationResponseDto responseDto = authenticationEntrypointMapper
-                .authenticationResponseDomainToDto(registerUseCase.execute(requestDomain));
-
-        return ResponseEntity.ok(responseDto);
+        registerUseCase.execute(requestDomain);
     }
 
     @PostMapping("/authenticate")
