@@ -27,6 +27,9 @@ public class WriteOffDto {
     @NotBlank(message = "Tag name is required")
     private String tagName;
 
+    @NotBlank(message = "Tag quantity is required")
+    private String tagQuantity;
+
     @NotBlank(message = "Write off serviceOrder is required")
     private String serviceOrder;
 

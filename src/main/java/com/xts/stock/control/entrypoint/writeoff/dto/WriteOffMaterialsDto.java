@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class WriteOffMaterialsDto {
 
-    @NotBlank(message = "Barcode is required")
     private String barCode;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

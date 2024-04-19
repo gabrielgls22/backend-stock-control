@@ -31,8 +31,8 @@ public class WriteOffRegisterUseCase {
     public void execute(final WriteOffDomain requestDomain) {
 
         final List<StockDomain> allStock = stockGateway.getAllStock();
-
-        writeOffGateway.validateServiceOrderDuplicity(requestDomain.getServiceOrder());
+//        Should not validate, for now, because serviceOrder can be duplicated
+//        writeOffGateway.validateServiceOrderDuplicity(requestDomain.getServiceOrder());
 
         final WriteOffDomain writeOffWithLengthUsed = getWriteOffWithLengthUsed(requestDomain, allStock);
 

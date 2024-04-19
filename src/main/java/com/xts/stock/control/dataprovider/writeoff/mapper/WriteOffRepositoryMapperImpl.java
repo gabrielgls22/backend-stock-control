@@ -42,6 +42,7 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
                     .costumerName(writeOffEntity.getCostumerName())
                     .tagCode(writeOffEntity.getTagCode())
                     .tagName(writeOffEntity.getTagName())
+                    .tagQuantity(writeOffEntity.getTagQuantity())
                     .serviceOrder(writeOffEntity.getServiceOrder())
                     .materials(responseWriteOffMaterialsEntityToDomain(writeOffEntity.getMaterials()))
                     .build();
@@ -66,20 +67,28 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
     }
 
     @Override
-    public WriteOffDomain writeOffByServiceOrderEntityToDomain(final WriteOffDetailsEntity responseEntity) {
+    public List<WriteOffDomain> writeOffByServiceOrderEntityToDomain(
+            final List<WriteOffDetailsEntity> responseEntity) {
 
-        return Optional.ofNullable(responseEntity)
-                .map(writeOffEntity -> WriteOffDomain.builder()
-                        .writeOffDate(writeOffEntity.getWriteOffDate())
-                        .writeOffCode(writeOffEntity.getWriteOffCode())
-                        .costumerCnpj(writeOffEntity.getCostumerCnpj())
-                        .costumerName(writeOffEntity.getCostumerName())
-                        .tagCode(writeOffEntity.getTagCode())
-                        .tagName(writeOffEntity.getTagName())
-                        .serviceOrder(writeOffEntity.getServiceOrder())
-                        .materials(responseWriteOffMaterialsEntityToDomain(writeOffEntity.getMaterials()))
-                        .build()
-                ).orElse(null);
+        final List<WriteOffDomain> writeOffDomainList = new ArrayList<>();
+
+        responseEntity.forEach(writeOffEntity -> {
+            final WriteOffDomain writeOffDomain = WriteOffDomain.builder()
+                    .writeOffDate(writeOffEntity.getWriteOffDate())
+                    .writeOffCode(writeOffEntity.getWriteOffCode())
+                    .costumerCnpj(writeOffEntity.getCostumerCnpj())
+                    .costumerName(writeOffEntity.getCostumerName())
+                    .tagCode(writeOffEntity.getTagCode())
+                    .tagName(writeOffEntity.getTagName())
+                    .tagQuantity(writeOffEntity.getTagQuantity())
+                    .serviceOrder(writeOffEntity.getServiceOrder())
+                    .materials(responseWriteOffMaterialsEntityToDomain(writeOffEntity.getMaterials()))
+                    .build();
+
+            writeOffDomainList.add(writeOffDomain);
+        });
+
+        return writeOffDomainList;
     }
 
     protected List<WriteOffDetailsEntity> returnWriteOffListDomainToEntity(final WriteOffDomain requestDomain) {
@@ -92,6 +101,7 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
                 .costumerName(requestDomain.getCostumerName())
                 .tagCode(requestDomain.getTagCode())
                 .tagName(requestDomain.getTagName())
+                .tagQuantity(requestDomain.getTagQuantity())
                 .serviceOrder(requestDomain.getServiceOrder())
                 .materials(returnMaterialsDomainToEntity(requestDomain.getMaterials()))
                 .build();

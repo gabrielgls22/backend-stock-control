@@ -6,6 +6,7 @@ import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffMaterialsDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffSearchRequestDomain;
 import com.xts.stock.control.utils.Utils;
+import org.mapstruct.ap.internal.util.Strings;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -28,6 +29,7 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
             writeOffDomainBuilder.costumerName(requestDto.getCostumerName().trim());
             writeOffDomainBuilder.tagCode(requestDto.getTagCode().trim());
             writeOffDomainBuilder.tagName(requestDto.getTagName().trim());
+            writeOffDomainBuilder.tagQuantity(requestDto.getTagQuantity());
             writeOffDomainBuilder.serviceOrder(requestDto.getServiceOrder().trim());
             writeOffDomainBuilder.materials(responseTagListDtoToDomain(requestDto.getMaterials()));
         }
@@ -47,6 +49,7 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
                     .costumerName(writeOffDomain.getCostumerName())
                     .tagCode(writeOffDomain.getTagCode())
                     .tagName(writeOffDomain.getTagName())
+                    .tagQuantity(writeOffDomain.getTagQuantity())
                     .serviceOrder(writeOffDomain.getServiceOrder())
                     .materials(responseWriteOffMaterialsDomainToDto(writeOffDomain.getMaterials()))
                     .build();

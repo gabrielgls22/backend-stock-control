@@ -46,8 +46,8 @@ public class WriteOffDataProvider implements WriteOffGateway {
     }
 
     @Override
-    public WriteOffDomain getWriteOffByServiceOrder(final String serviceOrder) {
-        final WriteOffDetailsEntity responseEntity = writeOffRepository.getWriteOffByServiceOrder(serviceOrder);
+    public List<WriteOffDomain> getWriteOffByServiceOrder(final String serviceOrder) {
+        final List<WriteOffDetailsEntity> responseEntity = writeOffRepository.getWriteOffByServiceOrder(serviceOrder);
 
         return writeOffRepositoryMapper.writeOffByServiceOrderEntityToDomain(responseEntity);
     }

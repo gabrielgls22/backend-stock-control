@@ -19,6 +19,8 @@ public class WriteOffDomain {
     private String costumerName;
     private String tagCode;
     private String tagName;
+    private String tagQuantity;
     private String serviceOrder;
+    private String note;
     private List<WriteOffMaterialsDomain> materials;
 }

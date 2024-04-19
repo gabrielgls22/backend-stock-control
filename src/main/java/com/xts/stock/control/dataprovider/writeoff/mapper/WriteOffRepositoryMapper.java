@@ -15,5 +15,5 @@ public interface WriteOffRepositoryMapper {
 
     DeleteWriteOffEntity deleteWriteOffDomainToEntity(DeleteWriteOffDomain requestDomain);
 
-    WriteOffDomain writeOffByServiceOrderEntityToDomain(WriteOffDetailsEntity responseEntity);
+    List<WriteOffDomain> writeOffByServiceOrderEntityToDomain(List<WriteOffDetailsEntity> responseEntity);
 }

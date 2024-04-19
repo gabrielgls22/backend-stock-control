@@ -89,17 +89,26 @@ public class WriteOffRepository {
         }
     }
 
-    public WriteOffDetailsEntity getWriteOffByServiceOrder(final String serviceOrder) {
+    public List<WriteOffDetailsEntity> getWriteOffByServiceOrder(final String serviceOrder) {
         try {
             final String errorMessage = "Order de serviço de número " + serviceOrder + " não encontrada";
 
-            final WriteOffEntity writeOffEntity = writeOffDbRepository.findByWriteOffListServiceOrder(serviceOrder)
+            final List<WriteOffEntity> writeOffEntity = writeOffDbRepository.findByWriteOffListServiceOrder(serviceOrder)
                     .orElseThrow(() -> new StandardException(errorMessage));
 
-            return writeOffEntity.getWriteOffList()
-                    .stream().filter(writeOff -> writeOff.getServiceOrder().equals(serviceOrder))
-                    .findFirst()
-                    .orElseThrow(() -> new StandardException(errorMessage));
+            final List<WriteOffDetailsEntity> writeOffDetailsList = new ArrayList<>();
+
+            writeOffEntity.forEach(writeOff -> {
+                final WriteOffDetailsEntity writeOffDetailsEntity = writeOff.getWriteOffList()
+                        .stream()
+                        .filter(writeOffDetails -> serviceOrder.equals(writeOffDetails.getServiceOrder()))
+                        .findFirst()
+                        .orElseThrow(() -> new StandardException(errorMessage));
+
+                writeOffDetailsList.add(writeOffDetailsEntity);
+            });
+
+            return writeOffDetailsList;
 
         } catch (final StandardException e) {
             throw new StandardException("Order de serviço de número " + serviceOrder + " não encontrada.");
@@ -108,12 +117,12 @@ public class WriteOffRepository {
 
     public void validateServiceOrderDuplicity(final String serviceOrder) {
 
-        writeOffDbRepository.findByWriteOffListServiceOrder(serviceOrder)
-                .ifPresent(writeOff -> {
-                    if (writeOff.getWriteOffList().size() > 0) {
-                        throw new StandardException("Já existe a O.S. de número " + serviceOrder +
-                                " no banco. Saída não cadastrada.");
-                    }
-                });
+//        writeOffDbRepository.findByWriteOffListServiceOrder(serviceOrder)
+//                .ifPresent(writeOff -> {
+//                    if (writeOff.getWriteOffList().size() > 0) {
+//                        throw new StandardException("Já existe a O.S. de número " + serviceOrder +
+//                                " no banco. Saída não cadastrada.");
+//                    }
+//                });
     }
 }

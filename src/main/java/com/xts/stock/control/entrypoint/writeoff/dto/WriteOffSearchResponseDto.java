@@ -23,21 +23,11 @@ public class WriteOffSearchResponseDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String writeOffCode;
 
-    @NotBlank(message = "Costumer cnpj is required")
     private String costumerCnpj;
-
-    @NotBlank(message = "Costumer name is required")
     private String costumerName;
-
-    @NotBlank(message = "Tag code is required")
     private String tagCode;
-
-    @NotBlank(message = "Tag name is required")
     private String tagName;
-
-    @NotBlank(message = "serviceOrder are required")
+    private String tagQuantity;
     private String serviceOrder;
-
-    @NotNull(message = "Material information")
-    private List<@Valid WriteOffMaterialsDto> materials;
+    private List<WriteOffMaterialsDto> materials;
 }

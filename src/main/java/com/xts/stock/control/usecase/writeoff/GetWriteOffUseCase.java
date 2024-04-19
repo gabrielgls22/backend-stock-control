@@ -20,14 +20,8 @@ public class GetWriteOffUseCase {
     public List<WriteOffDomain> execute(final WriteOffSearchRequestDomain requestDomain, final String serviceOrder) {
 
         return Optional.ofNullable(serviceOrder)
-                .map(serviceOrderSearch -> {
-                            final List<WriteOffDomain> writeOffByServiceOrder = new ArrayList<>();
-
-                            writeOffByServiceOrder.add(writeOffGateway.getWriteOffByServiceOrder(serviceOrderSearch));
-
-                            return writeOffByServiceOrder;
-                        }
-                ).orElseGet(() ->
+                .map(writeOffGateway::getWriteOffByServiceOrder)
+                .orElseGet(() ->
                         getFilteredWriteOffList(requestDomain)
                 );
     }
