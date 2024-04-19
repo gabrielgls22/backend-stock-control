@@ -16,19 +16,6 @@ public class CostumerRegisterUseCase {
 
     public void execute(final CostumerDomain requestDomain) {
 
-        validateExistingTag(requestDomain, costumerGateway.getAllCostumers());
-
         costumerGateway.createNewCostumer(requestDomain);
-    }
-
-    private void validateExistingTag(final CostumerDomain requestDomain, final List<CostumerDomain> allCostumers) {
-
-        requestDomain.getTagList().forEach(customerDomain ->
-                allCostumers.forEach(customerResponse ->
-                        customerResponse.getTagList().forEach(tag -> {
-                            if (tag.getCode().equalsIgnoreCase(customerDomain.getCode())) {
-                                throw new TagAlreadyExistException(tag.getName(), customerDomain.getCode());
-                            }
-                        })));
     }
 }

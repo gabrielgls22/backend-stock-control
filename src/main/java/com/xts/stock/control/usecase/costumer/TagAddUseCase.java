@@ -20,8 +20,6 @@ public class TagAddUseCase {
 
         final List<CostumerDomain> allCostumers = costumerGateway.getAllCostumers();
 
-        validateExistingTag(requestDomain, costumerGateway.getAllCostumers());
-
         costumerGateway.addTag(requestDomain);
 
         allCostumers.stream()
@@ -35,15 +33,5 @@ public class TagAddUseCase {
                 ));
 
         return allCostumers;
-    }
-
-    private void validateExistingTag(final TagAddRequestDomain requestDomain, final List<CostumerDomain> allCostumers) {
-
-        allCostumers.forEach(customerResponse ->
-                customerResponse.getTagList().forEach(tag -> {
-                    if (tag.getCode().equalsIgnoreCase(requestDomain.getCode())) {
-                        throw new TagAlreadyExistException(tag.getName(), requestDomain.getCode());
-                    }
-                }));
     }
 }
