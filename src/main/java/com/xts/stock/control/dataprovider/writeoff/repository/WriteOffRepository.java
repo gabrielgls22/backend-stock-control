@@ -1,6 +1,7 @@
 package com.xts.stock.control.dataprovider.writeoff.repository;
 
 import com.xts.stock.control.dataprovider.writeoff.entity.DeleteWriteOffEntity;
+import com.xts.stock.control.dataprovider.writeoff.entity.UpdateWriteOffRequestEntity;
 import com.xts.stock.control.dataprovider.writeoff.entity.WriteOffDetailsEntity;
 import com.xts.stock.control.dataprovider.writeoff.entity.WriteOffEntity;
 import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException;
@@ -12,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +43,7 @@ public class WriteOffRepository {
         }
     }
 
-    public List<WriteOffDetailsEntity> getWriteOffsByDate(final String firstDay, final String lastDay) {
+    public List<WriteOffDetailsEntity> getWriteOffsByFirstAndLastDay(final String firstDay, final String lastDay) {
         try {
             final Query query = new Query();
 
@@ -62,6 +64,37 @@ public class WriteOffRepository {
                     allWriteOffDays.addAll(writeOffEntity.getWriteOffList()));
 
             return allWriteOffDays;
+
+        } catch (final StandardException e) {
+            throw new StandardException("Erro ao buscar saídas de etiquetas nas datas fornecidas.");
+        }
+    }
+
+    public void updateWriteOff(final UpdateWriteOffRequestEntity requestEntity) {
+        try {
+            final WriteOffEntity writeOffEntity = writeOffDbRepository.findById(requestEntity.getWriteOffDate())
+                    .orElseThrow(() -> new StandardException("Erro ao salvar saída de etiqueta na data: " +
+                            requestEntity.getWriteOffDate()));
+
+            writeOffEntity.getWriteOffList().stream()
+                    .filter(writeOff -> requestEntity.getWriteOffCode().equalsIgnoreCase(writeOff.getWriteOffCode()))
+                    .findFirst()
+                    .ifPresent(writeOff -> {
+                        writeOff.setUpdatedAt(LocalDate.now(ZoneId.of("America/Sao_Paulo"))
+                                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                        writeOff.setCostumerName(requestEntity.getCostumerName());
+                        writeOff.setCostumerCnpj(requestEntity.getCostumerCnpj());
+                        writeOff.setTagName(requestEntity.getTagName());
+                        writeOff.setTagCode(requestEntity.getTagCode());
+                        writeOff.setTagQuantity(requestEntity.getTagQuantity());
+                        writeOff.setServiceOrder(requestEntity.getServiceOrder());
+                    });
+
+            final Query query = new Query(Criteria.where("_id").is(requestEntity.getWriteOffDate()));
+
+            final Update update = new Update().set("writeOffList", writeOffEntity.getWriteOffList());
+
+            mongoTemplate.updateFirst(query, update, WriteOffEntity.class);
 
         } catch (final StandardException e) {
             throw new StandardException("Erro ao buscar saídas de etiquetas nas datas fornecidas.");

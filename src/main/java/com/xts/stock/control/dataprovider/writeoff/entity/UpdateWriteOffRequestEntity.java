@@ -5,23 +5,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WriteOffDetailsEntity {
+public class UpdateWriteOffRequestEntity {
 
-    private String updatedAt;
-    private String writeOffDate;
     private String writeOffCode;
-    private String costumerCnpj;
+    private String writeOffDate;
     private String costumerName;
-    private String tagCode;
+    private String costumerCnpj;
     private String tagName;
+    private String tagCode;
     private String tagQuantity;
     private String serviceOrder;
-    private List<WriteOffMaterialEntity> materials;
-
+    private String firstDay;
+    private String lastDay;
 }

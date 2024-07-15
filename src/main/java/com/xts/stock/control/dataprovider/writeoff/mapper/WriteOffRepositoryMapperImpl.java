@@ -1,10 +1,8 @@
 package com.xts.stock.control.dataprovider.writeoff.mapper;
 
-import com.xts.stock.control.dataprovider.writeoff.entity.DeleteWriteOffEntity;
-import com.xts.stock.control.dataprovider.writeoff.entity.WriteOffDetailsEntity;
-import com.xts.stock.control.dataprovider.writeoff.entity.WriteOffEntity;
-import com.xts.stock.control.dataprovider.writeoff.entity.WriteOffMaterialEntity;
+import com.xts.stock.control.dataprovider.writeoff.entity.*;
 import com.xts.stock.control.usecase.writeoff.domain.DeleteWriteOffDomain;
+import com.xts.stock.control.usecase.writeoff.domain.UpdateWriteOffRequestDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffMaterialsDomain;
 import org.springframework.stereotype.Component;
@@ -31,7 +29,7 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
     }
 
     @Override
-    public List<WriteOffDomain> getAllWriteOffsEntityToDomain(final List<WriteOffDetailsEntity> responseEntity) {
+    public List<WriteOffDomain> getWriteOffsEntityToDomain(final List<WriteOffDetailsEntity> responseEntity) {
         final List<WriteOffDomain> writeOffDomainList = new ArrayList<>();
 
         responseEntity.forEach(writeOffEntity -> {
@@ -89,6 +87,26 @@ public class WriteOffRepositoryMapperImpl implements WriteOffRepositoryMapper{
         });
 
         return writeOffDomainList;
+    }
+
+    @Override
+    public UpdateWriteOffRequestEntity updateWriteOffRequestDomainToEntity(
+            final UpdateWriteOffRequestDomain requestDomain) {
+
+        return Optional.ofNullable(requestDomain)
+                .map(writeOffDomain -> UpdateWriteOffRequestEntity.builder()
+                        .writeOffDate(writeOffDomain.getWriteOffDate())
+                        .writeOffCode(writeOffDomain.getWriteOffCode())
+                        .costumerName(writeOffDomain.getCostumerName())
+                        .costumerCnpj(writeOffDomain.getCostumerCnpj())
+                        .tagName(writeOffDomain.getTagName())
+                        .tagCode(writeOffDomain.getTagCode())
+                        .tagQuantity(writeOffDomain.getTagQuantity())
+                        .serviceOrder(writeOffDomain.getServiceOrder())
+                        .firstDay(writeOffDomain.getFirstDay())
+                        .lastDay(writeOffDomain.getLastDay())
+                        .build())
+                .orElse(UpdateWriteOffRequestEntity.builder().build());
     }
 
     protected List<WriteOffDetailsEntity> returnWriteOffListDomainToEntity(final WriteOffDomain requestDomain) {

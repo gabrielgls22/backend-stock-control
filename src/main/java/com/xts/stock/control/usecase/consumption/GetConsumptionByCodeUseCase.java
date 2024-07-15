@@ -3,9 +3,7 @@ package com.xts.stock.control.usecase.consumption;
 import com.xts.stock.control.entrypoint.interceptor.exceptions.StandardException;
 import com.xts.stock.control.usecase.consumption.domain.ConsumptionConsultRequestDomain;
 import com.xts.stock.control.usecase.consumption.domain.ConsumptionConsultResponseDomain;
-import com.xts.stock.control.usecase.supplier.domain.MaterialDomain;
 import com.xts.stock.control.usecase.supplier.domain.SupplierDomain;
-import com.xts.stock.control.usecase.supplier.gateway.SupplierGateway;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffMaterialsDomain;
 import com.xts.stock.control.usecase.writeoff.gateway.WriteOffGateway;
@@ -24,7 +22,7 @@ public class GetConsumptionByCodeUseCase {
 
     public List<ConsumptionConsultResponseDomain> execute(final ConsumptionConsultRequestDomain requestDomain) {
 
-        final List<WriteOffDomain> writeOffDomainList = writeOffGateway.getWriteOffsByDate(
+        final List<WriteOffDomain> writeOffDomainList = writeOffGateway.getWriteOffsByFirstAndLastDay(
                 requestDomain.getFirstDay(), requestDomain.getLastDay());
 
         final List<ConsumptionConsultResponseDomain> consumptionConsultList =

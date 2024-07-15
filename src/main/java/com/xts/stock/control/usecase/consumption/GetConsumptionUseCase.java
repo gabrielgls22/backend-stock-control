@@ -20,7 +20,7 @@ public class GetConsumptionUseCase {
 
     public List<ConsumptionDomain> execute(final String firstDay, final String lastDay) {
 
-        final List<WriteOffDomain> writeOffDomainList = writeOffGateway.getWriteOffsByDate(firstDay, lastDay);
+        final List<WriteOffDomain> writeOffDomainList = writeOffGateway.getWriteOffsByFirstAndLastDay(firstDay, lastDay);
 
         return writeOffDomainList.stream()
                 .flatMap(writeOff -> writeOff.getMaterials().stream())

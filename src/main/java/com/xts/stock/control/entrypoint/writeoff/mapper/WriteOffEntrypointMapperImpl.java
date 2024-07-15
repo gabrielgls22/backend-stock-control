@@ -1,10 +1,7 @@
 package com.xts.stock.control.entrypoint.writeoff.mapper;
 
 import com.xts.stock.control.entrypoint.writeoff.dto.*;
-import com.xts.stock.control.usecase.writeoff.domain.DeleteWriteOffDomain;
-import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
-import com.xts.stock.control.usecase.writeoff.domain.WriteOffMaterialsDomain;
-import com.xts.stock.control.usecase.writeoff.domain.WriteOffSearchRequestDomain;
+import com.xts.stock.control.usecase.writeoff.domain.*;
 import com.xts.stock.control.utils.Utils;
 import org.mapstruct.ap.internal.util.Strings;
 import org.springframework.stereotype.Component;
@@ -38,7 +35,7 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
     }
 
     @Override
-    public List<WriteOffSearchResponseDto> getAllWriteOffsDomainToDto(final List<WriteOffDomain> writeOffDomainList) {
+    public List<WriteOffSearchResponseDto> getWriteOffsDomainToDto(final List<WriteOffDomain> writeOffDomainList) {
         final List<WriteOffSearchResponseDto> writeOffSearchResponseDtoList = new ArrayList<>();
 
         writeOffDomainList.forEach(writeOffDomain -> {
@@ -87,6 +84,30 @@ public class WriteOffEntrypointMapperImpl implements WriteOffEntrypointMapper{
                         .lastDay(writeOffDto.getLastDay())
                         .build()
                 ).orElse(WriteOffSearchRequestDomain.builder().build());
+    }
+
+    @Override
+    public UpdateWriteOffRequestDomain updateWriteOffRequestDtoToDomain(final UpdateWriteOffRequestDto requestDto) {
+
+        return Optional.ofNullable(requestDto)
+                .map(writeOffDto ->
+                    UpdateWriteOffRequestDomain.builder()
+                            .writeOffCode(writeOffDto.getWriteOffCode())
+                            .writeOffDate(writeOffDto.getWriteOffDate())
+                            .costumerName(writeOffDto.getCostumerName())
+                            .costumerCnpj(Utils.removeSignals(writeOffDto.getCostumerCnpj()))
+                            .tagName(writeOffDto.getTagName())
+                            .tagCode(writeOffDto.getTagCode())
+                            .tagQuantity(writeOffDto.getTagQuantity())
+                            .serviceOrder(writeOffDto.getServiceOrder())
+                            .searchServiceOrder(writeOffDto.getSearchServiceOrder())
+                            .searchCostumerCnpj(writeOffDto.getSearchCostumerCnpj())
+                            .searchTagCode(writeOffDto.getSearchTagCode())
+                            .searchMaterial(writeOffDto.getSearchMaterial())
+                            .firstDay(writeOffDto.getFirstDay())
+                            .lastDay(writeOffDto.getLastDay())
+                            .build()
+                ).orElse(UpdateWriteOffRequestDomain.builder().build());
     }
 
     protected List<WriteOffMaterialsDomain> responseTagListDtoToDomain(

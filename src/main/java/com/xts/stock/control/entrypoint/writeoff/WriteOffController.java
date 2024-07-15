@@ -1,14 +1,13 @@
 package com.xts.stock.control.entrypoint.writeoff;
 
-import com.xts.stock.control.entrypoint.writeoff.dto.DeleteWriteOffDto;
-import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffSearchResponseDto;
-import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffDto;
-import com.xts.stock.control.entrypoint.writeoff.dto.WriteOffSearchRequestDto;
+import com.xts.stock.control.entrypoint.writeoff.dto.*;
 import com.xts.stock.control.entrypoint.writeoff.mapper.WriteOffEntrypointMapper;
 import com.xts.stock.control.usecase.writeoff.GetWriteOffUseCase;
 import com.xts.stock.control.usecase.writeoff.WriteOffDeleteUseCase;
 import com.xts.stock.control.usecase.writeoff.WriteOffRegisterUseCase;
+import com.xts.stock.control.usecase.writeoff.WriteOffUpdateUseCase;
 import com.xts.stock.control.usecase.writeoff.domain.DeleteWriteOffDomain;
+import com.xts.stock.control.usecase.writeoff.domain.UpdateWriteOffRequestDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffSearchRequestDomain;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +33,8 @@ public class WriteOffController {
     private final GetWriteOffUseCase getWriteOffUseCase;
 
     private final WriteOffDeleteUseCase writeOffDeleteUseCase;
+
+    private final WriteOffUpdateUseCase writeOffUpdateUseCase;
 
 
     @PostMapping("/register")
@@ -62,7 +63,7 @@ public class WriteOffController {
                     @ApiResponse(responseCode = "400", description = "Bad request"),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             })
-    public @ResponseBody @NotNull List<WriteOffSearchResponseDto> registerNewWriteOff(
+    public @ResponseBody List<WriteOffSearchResponseDto> registerNewWriteOff(
             @RequestParam(value = "serviceOrder", required = false) final String serviceOrder,
             @RequestBody(required = false) @Valid final WriteOffSearchRequestDto requestDto) {
 
@@ -71,7 +72,7 @@ public class WriteOffController {
 
         final List<WriteOffDomain> responseDomain = getWriteOffUseCase.execute(requestDomain, serviceOrder);
 
-        return writeOffEntrypointMapper.getAllWriteOffsDomainToDto(responseDomain);
+        return writeOffEntrypointMapper.getWriteOffsDomainToDto(responseDomain);
     }
 
     @PostMapping("/delete")
@@ -88,5 +89,25 @@ public class WriteOffController {
         final DeleteWriteOffDomain requestDomain = writeOffEntrypointMapper.deleteWriteOffDtoToDomain(requestDto);
 
         writeOffDeleteUseCase.execute(requestDomain);
+    }
+
+    @PostMapping("/update")
+    @Operation(summary = "Update write off",
+            description = "Should update a specific writeOff",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            })
+    public @ResponseBody List<WriteOffSearchResponseDto> updateWriteOff(
+            @RequestBody @Valid @NotNull final UpdateWriteOffRequestDto requestDto) {
+
+        final UpdateWriteOffRequestDomain requestDomain =
+                writeOffEntrypointMapper.updateWriteOffRequestDtoToDomain(requestDto);
+
+        final List<WriteOffDomain> responseDomain = writeOffUpdateUseCase.execute(requestDomain);
+
+        return writeOffEntrypointMapper.getWriteOffsDomainToDto(responseDomain);
     }
 }

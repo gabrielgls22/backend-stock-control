@@ -1,11 +1,13 @@
 package com.xts.stock.control.dataprovider.writeoff;
 
 import com.xts.stock.control.dataprovider.writeoff.entity.DeleteWriteOffEntity;
+import com.xts.stock.control.dataprovider.writeoff.entity.UpdateWriteOffRequestEntity;
 import com.xts.stock.control.dataprovider.writeoff.entity.WriteOffDetailsEntity;
 import com.xts.stock.control.dataprovider.writeoff.entity.WriteOffEntity;
 import com.xts.stock.control.dataprovider.writeoff.mapper.WriteOffRepositoryMapper;
 import com.xts.stock.control.dataprovider.writeoff.repository.WriteOffRepository;
 import com.xts.stock.control.usecase.writeoff.domain.DeleteWriteOffDomain;
+import com.xts.stock.control.usecase.writeoff.domain.UpdateWriteOffRequestDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
 import com.xts.stock.control.usecase.writeoff.gateway.WriteOffGateway;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +33,10 @@ public class WriteOffDataProvider implements WriteOffGateway {
     }
 
     @Override
-    public List<WriteOffDomain> getWriteOffsByDate(final String firstDay, final String lastDay) {
-        final List<WriteOffDetailsEntity> responseEntity = writeOffRepository.getWriteOffsByDate(firstDay, lastDay);
+    public List<WriteOffDomain> getWriteOffsByFirstAndLastDay(final String firstDay, final String lastDay) {
+        final List<WriteOffDetailsEntity> responseEntity = writeOffRepository.getWriteOffsByFirstAndLastDay(firstDay, lastDay);
 
-        return writeOffRepositoryMapper.getAllWriteOffsEntityToDomain(responseEntity);
+        return writeOffRepositoryMapper.getWriteOffsEntityToDomain(responseEntity);
     }
 
     @Override
@@ -56,5 +58,13 @@ public class WriteOffDataProvider implements WriteOffGateway {
     public void validateServiceOrderDuplicity(final String serviceOrder) {
 
         writeOffRepository.validateServiceOrderDuplicity(serviceOrder);
+    }
+
+    @Override
+    public void updateWriteOffByDateAndWriteOffCode(final UpdateWriteOffRequestDomain requestDomain) {
+        final UpdateWriteOffRequestEntity requestEntity =
+                writeOffRepositoryMapper.updateWriteOffRequestDomainToEntity(requestDomain);
+
+        writeOffRepository.updateWriteOff(requestEntity);
     }
 }

@@ -1,7 +1,7 @@
 package com.xts.stock.control.usecase.writeoff;
 
+import com.xts.stock.control.usecase.writeoff.domain.UpdateWriteOffRequestDomain;
 import com.xts.stock.control.usecase.writeoff.domain.WriteOffDomain;
-import com.xts.stock.control.usecase.writeoff.domain.WriteOffSearchRequestDomain;
 import com.xts.stock.control.usecase.writeoff.gateway.WriteOffGateway;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.ap.internal.util.Strings;
@@ -12,13 +12,15 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class GetWriteOffUseCase {
+public class WriteOffUpdateUseCase {
 
     private final WriteOffGateway writeOffGateway;
 
-    public List<WriteOffDomain> execute(final WriteOffSearchRequestDomain requestDomain, final String serviceOrder) {
+    public List<WriteOffDomain> execute(final UpdateWriteOffRequestDomain requestDomain) {
 
-        return Optional.ofNullable(serviceOrder)
+        writeOffGateway.updateWriteOffByDateAndWriteOffCode(requestDomain);
+
+        return Optional.ofNullable(requestDomain.getSearchServiceOrder())
                 .map(writeOffGateway::getWriteOffByServiceOrder)
                 .orElseGet(() ->
                         getFilteredWriteOffList(requestDomain)
@@ -26,23 +28,23 @@ public class GetWriteOffUseCase {
     }
 
     private List<WriteOffDomain> getFilteredWriteOffList(
-            final WriteOffSearchRequestDomain requestDomain) {
+            final UpdateWriteOffRequestDomain requestDomain) {
 
         final List<WriteOffDomain> writeOffsByDate =
                 writeOffGateway.getWriteOffsByFirstAndLastDay(requestDomain.getFirstDay(), requestDomain.getLastDay());
 
         return writeOffsByDate.stream()
                 .filter(writeOffDomain ->
-                        Strings.isEmpty(requestDomain.getCostumerCnpj()) ||
-                                writeOffDomain.getCostumerCnpj().equals(requestDomain.getCostumerCnpj()))
+                        Strings.isEmpty(requestDomain.getSearchCostumerCnpj()) ||
+                                writeOffDomain.getCostumerCnpj().equals(requestDomain.getSearchCostumerCnpj()))
                 .filter(writeOffDomain ->
-                        Strings.isEmpty(requestDomain.getTagCode()) ||
-                                writeOffDomain.getTagCode().equals(requestDomain.getTagCode()))
+                        Strings.isEmpty(requestDomain.getSearchTagCode()) ||
+                                writeOffDomain.getTagCode().equals(requestDomain.getSearchTagCode()))
                 .filter(writeOffDomain ->
-                        Strings.isEmpty(requestDomain.getMaterial()) ||
+                        Strings.isEmpty(requestDomain.getSearchMaterial()) ||
                                 writeOffDomain.getMaterials().stream()
                                         .anyMatch(writeOffMaterial ->
-                                                writeOffMaterial.getName().equalsIgnoreCase(requestDomain.getMaterial())))
+                                                writeOffMaterial.getName().equalsIgnoreCase(requestDomain.getSearchMaterial())))
                 .toList();
     }
 }
